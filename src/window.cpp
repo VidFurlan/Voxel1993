@@ -1,4 +1,5 @@
 #include "3D_ENGINE/window.hpp"
+#include "3D_ENGINE/window_defines.hpp"
 #include <GLFW/glfw3.h>
 
 Window::Window() {
@@ -21,8 +22,8 @@ Window::Window() {
     // Set the user pointer to this instance
     glfwSetWindowUserPointer(window, this);
 
-    glPointSize(pixelScale);                         // pixel size
-    glOrtho(0, GLSCR_WIDTH, 0, GLSCR_HEIGHT, -1, 1); // origin bottom left
+    glPointSize(pixelScale);
+    glOrtho(0, GLSCR_WIDTH, 0, GLSCR_HEIGHT, -1, 1); 
 }
 
 void Window::initGlfwSettings() {
@@ -33,72 +34,65 @@ void Window::initGlfwSettings() {
 #endif
 }
 
-void Window::pixel(int x, int y, int c) {
-    int rgb[3];
-    if(c==0){ rgb[0]=255; rgb[1]=255; rgb[2]=  0;} //Yellow	
-    if(c==1){ rgb[0]=160; rgb[1]=160; rgb[2]=  0;} //Yellow darker	
-    if(c==2){ rgb[0]=  0; rgb[1]=255; rgb[2]=  0;} //Green	
-    if(c==3){ rgb[0]=  0; rgb[1]=160; rgb[2]=  0;} //Green darker	
-    if(c==4){ rgb[0]=  0; rgb[1]=255; rgb[2]=255;} //Cyan	
-    if(c==5){ rgb[0]=  0; rgb[1]=160; rgb[2]=160;} //Cyan darker
-    if(c==6){ rgb[0]=160; rgb[1]=100; rgb[2]=  0;} //brown	
-    if(c==7){ rgb[0]=110; rgb[1]= 50; rgb[2]=  0;} //brown darker
-    if(c==8){ rgb[0]=  0; rgb[1]= 60; rgb[2]=130;} //background 
-    glColor3ub(rgb[0],rgb[1],rgb[2]); 
+/**
+ * @brief Draw a pixel on window
+ *
+ * @param x Position x
+ * @param y Position y
+ * @param rgbColor Color of the pixel
+ */
+void Window::pixel(int x, int y, RgbColor rgbColor) {
+    glColor3ub(rgbColor.r, rgbColor.g, rgbColor.b); 
     glBegin(GL_POINTS);
-    glVertex2i(x*pixelScale+2,y*pixelScale+2);
+    glVertex2i(x * pixelScale + 2, y * pixelScale + 2);
     glEnd();
 }
 
-//void pixel(int x, int y, color c) {
-//    glColor3ub(c.r, c.g, c.b); 
-//    glBegin(GL_POINTS);
-//    glVertex2i(x*pixelScale+2,y*pixelScale+2);
-//    glEnd();
-//}
-
+/**
+ * @brief Move player based on input
+ */
 void Window::movePlayer() {
     // move up, down, left, right
-    if (K.a == 1 && K.m == 0)
+    if (keys.a == 1 && keys.m == 0)
         std::cout << "left" << std::endl;
-    if (K.d == 1 && K.m == 0)
+    if (keys.d == 1 && keys.m == 0)
         std::cout << "right" << std::endl;
-    if (K.w == 1 && K.m == 0)
+    if (keys.w == 1 && keys.m == 0)
         std::cout << "up" << std::endl;
-    if (K.s == 1 && K.m == 0)
+    if (keys.s == 1 && keys.m == 0)
         std::cout << "down" << std::endl;
 
     // strafe left, right
-    if (K.sr == 1)
+    if (keys.sr == 1)
         printf("strafe left\n");
-    if (K.sl == 1)
+    if (keys.sl == 1)
         printf("strafe right\n");
 
     // move up, down, look up, look down
-    if (K.a == 1 && K.m == 1)
+    if (keys.a == 1 && keys.m == 1)
         printf("look up\n");
-    if (K.d == 1 && K.m == 1)
+    if (keys.d == 1 && keys.m == 1)
         printf("look down\n");
-    if (K.w == 1 && K.m == 1)
+    if (keys.w == 1 && keys.m == 1)
         printf("move up\n");
-    if (K.s == 1 && K.m == 1)
+    if (keys.s == 1 && keys.m == 1)
         printf("move down\n");
 }
 
+/**
+ * @brief Clear the background of the window using the background color
+ */
 void Window::clearBackground() {
     for (int y = 0; y < SCR_HEIGHT; y++)
         for (int x = 0; x < SCR_WIDTH; x++)
-            pixel(x, y, 8);
+            pixel(x, y, backgroundColor);
 }
 
 void Window::draw3D() {
     int x, y, c = 0;
     for (y = 0; y < SCR_HEIGHT_HALF; y++) {
         for (x = 0; x < SCR_WIDTH_HALF; x++) {
-            pixel(x, y, c);
-            c += 1;
-            if (c > 8)
-                c = 0;
+            pixel(x, y, RgbColor{0, y, x});
         }
     }
 
@@ -107,10 +101,13 @@ void Window::draw3D() {
     if (tick > 20)
         tick = 0;
 
-    pixel(SCR_WIDTH_HALF, SCR_HEIGHT_HALF + tick, 0);
+    pixel(SCR_WIDTH_HALF, SCR_HEIGHT_HALF + tick, blue);
 }
 
-void Window::display() {
+/**
+ * @brief Update window display
+ */
+void Window::updateDisplay() {
     clearBackground();
     movePlayer();
     draw3D();
@@ -123,33 +120,33 @@ void Window::key_callback(GLFWwindow *window, int key, int scancode, int action,
 
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_W)
-            win->K.w = 1;
+            win->keys.w = 1;
         if (key == GLFW_KEY_S)
-            win->K.s = 1;
+            win->keys.s = 1;
         if (key == GLFW_KEY_A)
-            win->K.a = 1;
+            win->keys.a = 1;
         if (key == GLFW_KEY_D)
-            win->K.d = 1;
+            win->keys.d = 1;
         if (key == GLFW_KEY_M)
-            win->K.m = 1;
+            win->keys.m = 1;
         if (key == GLFW_KEY_COMMA)
-            win->K.sr = 1;
+            win->keys.sr = 1;
         if (key == GLFW_KEY_PERIOD)
-            win->K.sl = 1;
+            win->keys.sl = 1;
     } else if (action == GLFW_RELEASE) {
         if (key == GLFW_KEY_W)
-            win->K.w = 0;
+            win->keys.w = 0;
         if (key == GLFW_KEY_S)
-            win->K.s = 0;
+            win->keys.s = 0;
         if (key == GLFW_KEY_A)
-            win->K.a = 0;
+            win->keys.a = 0;
         if (key == GLFW_KEY_D)
-            win->K.d = 0;
+            win->keys.d = 0;
         if (key == GLFW_KEY_M)
-            win->K.m = 0;
+            win->keys.m = 0;
         if (key == GLFW_KEY_COMMA)
-            win->K.sr = 0;
+            win->keys.sr = 0;
         if (key == GLFW_KEY_PERIOD)
-            win->K.sl = 0;
+            win->keys.sl = 0;
     }
 }

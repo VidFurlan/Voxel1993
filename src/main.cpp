@@ -8,7 +8,7 @@ int main() {
 
     while (!glfwWindowShouldClose(mainWindow.window)) {
         glClear(GL_COLOR_BUFFER_BIT);
-        mainWindow.display();
+        mainWindow.updateDisplay();
         glfwSwapBuffers(mainWindow.window);
         glfwPollEvents();
     }

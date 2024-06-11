@@ -13,24 +13,23 @@
  *
  */
 class Window {
+private:
+    int tick = 0;
+    Keys keys;
+
+    static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+
+    void pixel(int x, int y, RgbColor c);
+    void initGlfwSettings();
+    void movePlayer();
+    void clearBackground();
+    void draw3D();
+
 public:
     GLFWwindow *window;
 
     Window();
     
-    void update();
-    void drawPixel(int x, int y, rgbColor color);
-    void display();
-
-private:
-    int tick = 0;
-    keys K;
-
-    static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-    void pixel(int x, int y, int c);
-    void initGlfwSettings();
-    void movePlayer();
-    void clearBackground();
-    void draw3D();
+    void updateDisplay();
+    void drawPixel(int x, int y, RgbColor color);
 };
