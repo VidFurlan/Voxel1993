@@ -18,15 +18,16 @@ FetchContent_MakeAvailable(glm)
 
 # Header includes
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/include/custom)
+include_directories(${CMAKE_SOURCE_DIR}/include/3D_ENGINE)
 
 file(GLOB PROJECT_HEADERS 
-    ${CMAKE_SOURCE_DIR}/include/custom/*.h
-    ${CMAKE_SOURCE_DIR}/include/custom/*.hpp
+    ${CMAKE_SOURCE_DIR}/include/3D_ENGINE/*.h
+    ${CMAKE_SOURCE_DIR}/include/3D_ENGINE/*.hpp
 )
 
 set(SOURCES
     src/main.cpp
+    src/window.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
