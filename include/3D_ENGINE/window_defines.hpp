@@ -5,9 +5,9 @@ struct RgbColor {
 };
 
 struct Keys {
-    int w, s, a, d; // move up, down, left, right
-    int sl, sr;     // strafe left, right
-    int m;          // move up, down, look up, down
+    int w = 0, s = 0, a = 0, d = 0;     // move up, down, left, right
+    int sl = 0, sr = 0;                 // strafe left, right
+    int m = 0;                          // move up, down, look up, down
 };
 
 // Window settings

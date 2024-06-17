@@ -28,6 +28,8 @@ file(GLOB PROJECT_HEADERS
 set(SOURCES
     src/main.cpp
     src/window.cpp
+    src/player.cpp
+    src/delta_time.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
