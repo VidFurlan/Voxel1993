@@ -29,51 +29,41 @@ void Renderer::clipBehindPlayer(float *x1, float *y1, float *z1, float *x2, floa
     }
 }
 
-void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, int topPos1, int topPos2, RgbColor color, Sector &sector) {
-    float distBottom  = bottomPos2 - bottomPos1;
-    float distTop     = topPos2 - topPos1;
-    float distX       = (xPos2 - xPos1 == 0) ? 1 : xPos2 - xPos1;
-    float originalX1 = xPos1;
+void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, int topPos1, int topPos2, RgbColor color, Sector &sector, int orientation) {
+    float distBottom    = bottomPos2 - bottomPos1;
+    float distTop       = topPos2 - topPos1;
+    float distX         = (xPos2 - xPos1 == 0) ? 1 : xPos2 - xPos1;
+    float originalX1    = xPos1;
 
-    if (xPos1 < 1) xPos1 = 1;
-    if (xPos1 > SCR_WIDTH - 1) xPos1 = SCR_WIDTH - 1;
-    if (xPos2 < 1) xPos2 = 1;
-    if (xPos2 > SCR_WIDTH - 1) xPos2 = SCR_WIDTH - 1;
+    if (xPos1 < 0)          xPos1 = 0;
+    if (xPos1 > SCR_WIDTH)  xPos1 = SCR_WIDTH;
+    if (xPos2 < 0)          xPos2 = 0;
+    if (xPos2 > SCR_WIDTH)  xPos2 = SCR_WIDTH;
 
     for (int x = xPos1; x < xPos2; x++) {
         int y1 = bottomPos1 + distBottom * (x - originalX1 + 0.5) / distX;
         int y2 = topPos1 + distTop * (x - originalX1 + 0.5) / distX;
 
         // Y clipping
-        if (y1 < 1) y1 = 1;
-        if (y1 > SCR_HEIGHT - 1) y1 = SCR_HEIGHT - 1;
-        if (y2 < 1) y2 = 1;
-        if (y2 > SCR_HEIGHT - 1) y2 = SCR_HEIGHT - 1;
+        if (y1 < 0)             y1 = 0;
+        if (y1 > SCR_HEIGHT)    y1 = SCR_HEIGHT;
+        if (y2 < 0)             y2 = 0;
+        if (y2 > SCR_HEIGHT)    y2 = SCR_HEIGHT;
 
-        // Surface
-        // Save bottom and top points
-        if (sector.surfaceOrientation == 1) { 
-            sector.surfacePoints[x] = y1; 
-            continue;
+
+        if (orientation == 0) {
+            if (sector.surfaceOrientation == 1) sector.surfacePoints[x] = y1;
+            if (sector.surfaceOrientation == 2) sector.surfacePoints[x] = y2;
+            for (int y = y1; y < y2; y++)
+                mainWindow.pixel(x, y, color);
         }
 
-        if (sector.surfaceOrientation == 2) { 
-            sector.surfacePoints[x] = y2; 
-            continue;
+        if (orientation == 1) {
+            if (sector.surfaceOrientation == 1) y2 = sector.surfacePoints[x];
+            if (sector.surfaceOrientation == 2) y1 = sector.surfacePoints[x];
+            for (int y = y1; y < y2; y++)
+                mainWindow.pixel(x, y, (sector.surfaceOrientation == 1) ? sector.bottomColor : sector.topColor);
         }
-
-        // Draw bottom and top
-        if (sector.surfaceOrientation == -1)
-            for(int y = sector.surfacePoints[x]; y < y1; y++)
-                mainWindow.pixel(x, y, sector.bottomColor);
-
-        if (sector.surfaceOrientation == -2)
-            for(int y = y2; y < sector.surfacePoints[x]; y++)
-                mainWindow.pixel(x, y, sector.topColor);
-
-        // Draw wall
-        for (int y = y1; y < y2; y++)
-            mainWindow.pixel(x, y, color);
     }
 }
 
@@ -89,16 +79,27 @@ void Renderer::draw3D() {
     for (Sector &sector : sectors) {
         sector.distanceToPlayer = 0;
 
-        if (player.z < sector.zBottom)      sector.surfaceOrientation = 1;
-        else if (player.z > sector.zTop)    sector.surfaceOrientation = 2;
-        else                                sector.surfaceOrientation = 0;
+        int cycles = 2;
 
-        for (int orientation = 0; orientation < 2; orientation++) {
+        if (player.z < sector.zBottom) { 
+            sector.surfaceOrientation = 1;
+            std::fill(sector.surfacePoints.begin(), sector.surfacePoints.end(), SCR_HEIGHT);
+        }
+        else if (player.z > sector.zTop) { 
+            sector.surfaceOrientation = 2; 
+            std::fill(sector.surfacePoints.begin(), sector.surfacePoints.end(), 0);
+        }
+        else { 
+            sector.surfaceOrientation = 0; 
+            cycles = 1;
+        }
+
+        for (int orientation = 0; orientation < cycles; orientation++) {
             for (Wall &wall : sector.walls) {
                 float x1 = wall.xBottom1 - player.x, y1 = wall.yBottom1 - player.y;
                 float x2 = wall.xBottom2 - player.x, y2 = wall.yBottom2 - player.y;
 
-                if (orientation == 0) {
+                if (orientation == 1) {
                     std::swap(x1, x2);
                     std::swap(y1, y2);
                 }
@@ -119,8 +120,11 @@ void Renderer::draw3D() {
 
                 wz[0] = sector.zBottom - player.z + ((player.lookAngle * wy[0]) / 32.0);
                 wz[1] = sector.zBottom - player.z + ((player.lookAngle * wy[1]) / 32.0);
-                wz[2] = wz[0] + sector.zTop;
-                wz[3] = wz[1] + sector.zTop;
+                wz[2] = sector.zTop - player.z + ((player.lookAngle * wy[0]) / 32.0);
+                wz[3] = sector.zTop - player.z + ((player.lookAngle * wy[1]) / 32.0);
+
+                // Check if both bottom points are still behind the player after clipping
+                // if (wy[0] < 1 && wy[1] < 1) continue;
 
                 // Clip wall
                 clipBehindPlayer(&wx[0], &wy[0], &wz[0], &wx[1], &wy[1], &wz[1]);
@@ -135,23 +139,19 @@ void Renderer::draw3D() {
                 wx[3] = wx[3] * 200 / wy[3] + SCR_WIDTH_HALF;
                 wy[3] = wz[3] * 200 / wy[3] + SCR_HEIGHT_HALF;
 
-                // Check if both bottom points are still behind the player after clipping
-                // if (wy[0] < 1 && wy[1] < 1) continue;
+                drawWall(static_cast<int>(wx[0]), static_cast<int>(wx[1]), static_cast<int>(wy[0]), static_cast<int>(wy[1]), static_cast<int>(wy[2]), static_cast<int>(wy[3]), wall.color, sector, orientation);
 
-                drawWall(static_cast<int>(wx[0]), static_cast<int>(wx[1]), static_cast<int>(wy[0]), static_cast<int>(wy[1]), static_cast<int>(wy[2]), static_cast<int>(wy[3]), wall.color, sector);
-
-                if (wx[0] >= 0 && wx[0] < SCR_WIDTH && wy[0] >= 0 && wy[0] < SCR_HEIGHT)
-                    mainWindow.pixel(static_cast<int>(wx[0]), static_cast<int>(wy[0]), debugColor);
-                if (wx[1] >= 0 && wx[1] < SCR_WIDTH && wy[1] >= 0 && wy[1] < SCR_HEIGHT)
-                    mainWindow.pixel(static_cast<int>(wx[1]), static_cast<int>(wy[1]), debugColor);
-                if (wx[2] >= 0 && wx[2] < SCR_WIDTH && wy[2] >= 0 && wy[2] < SCR_HEIGHT)
-                    mainWindow.pixel(static_cast<int>(wx[2]), static_cast<int>(wy[2]), debugColor);
-                if (wx[3] >= 0 && wx[3] < SCR_WIDTH && wy[3] >= 0 && wy[3] < SCR_HEIGHT)
-                    mainWindow.pixel(static_cast<int>(wx[3]), static_cast<int>(wy[3]), debugColor);
+                // if (wx[0] >= 0 && wx[0] < SCR_WIDTH && wy[0] >= 0 && wy[0] < SCR_HEIGHT)
+                //     mainWindow.pixel(static_cast<int>(wx[0]), static_cast<int>(wy[0]), debugColor);
+                // if (wx[1] >= 0 && wx[1] < SCR_WIDTH && wy[1] >= 0 && wy[1] < SCR_HEIGHT)
+                //     mainWindow.pixel(static_cast<int>(wx[1]), static_cast<int>(wy[1]), debugColor);
+                // if (wx[2] >= 0 && wx[2] < SCR_WIDTH && wy[2] >= 0 && wy[2] < SCR_HEIGHT)
+                //     mainWindow.pixel(static_cast<int>(wx[2]), static_cast<int>(wy[2]), debugColor);
+                // if (wx[3] >= 0 && wx[3] < SCR_WIDTH && wy[3] >= 0 && wy[3] < SCR_HEIGHT)
+                //     mainWindow.pixel(static_cast<int>(wx[3]), static_cast<int>(wy[3]), debugColor);
             }
 
             sector.distanceToPlayer /= sector.walls.size();
-            sector.surfaceOrientation *= -1;
         }
     }
 }
