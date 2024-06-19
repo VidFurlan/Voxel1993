@@ -30,6 +30,8 @@ set(SOURCES
     src/window.cpp
     src/player.cpp
     src/renderer.cpp
+    src/wall.cpp
+    src/sector.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

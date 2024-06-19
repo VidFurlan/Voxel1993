@@ -1,8 +1,4 @@
 #include "3D_ENGINE/window.hpp"
-#include "3D_ENGINE/player.hpp"
-#include "3D_ENGINE/window_defines.hpp"
-#include <GLFW/glfw3.h>
-#include <cmath>
 
 Window mainWindow;
 
@@ -96,13 +92,13 @@ void Window::movePlayer() {
     if (keys.d == 1 && keys.m == 1)
         player.lookAngle += 1;
     if (keys.w == 1 && keys.m == 1)
-        player.z -= player.speed;
-    if (keys.s == 1 && keys.m == 1)
         player.z += player.speed;
+    if (keys.s == 1 && keys.m == 1)
+        player.z -= player.speed;
 
     // std::cout << "deltaTime: " <<() << std::endl;
     // std::cout << "keys: " << "w: " << keys.w << " s: " << keys.s << " a: " << keys.a << " d: " << keys.d << " m: " << keys.m << " sr: " << keys.sr << " sl: " << keys.sl << std::endl;
-    std::cout << "x: " << player.x << " y: " << player.y << " z: " << player.z << " angle: " << player.angle << " lookAngle: " << player.lookAngle << std::endl;
+    // std::cout << "x: " << player.x << " y: " << player.y << " z: " << player.z << " angle: " << player.angle << " lookAngle: " << player.lookAngle << std::endl;
 }
 
 /**

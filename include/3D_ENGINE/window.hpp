@@ -1,12 +1,12 @@
 #pragma once
 
-#include <iostream>
-#include <cmath>
-
 #include <GLFW/glfw3.h>
+#include <cmath>
+#include <iostream>
 
-#include "3D_ENGINE/renderer.hpp"
 #include "3D_ENGINE/window_defines.hpp"
+#include "3D_ENGINE/renderer.hpp"
+#include "3D_ENGINE/player.hpp"
 
 /**
  * @class Window
