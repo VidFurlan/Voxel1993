@@ -124,7 +124,7 @@ void Renderer::draw3D() {
                 wz[3] = sector.zTop - player.z + ((player.lookAngle * wy[1]) / 32.0);
 
                 // Check if both bottom points are still behind the player after clipping
-                // if (wy[0] < 1 && wy[1] < 1) continue;
+                if (wy[0] < 1 && wy[1] < 1) continue;
 
                 // Clip wall
                 clipBehindPlayer(&wx[0], &wy[0], &wz[0], &wx[1], &wy[1], &wz[1]);
