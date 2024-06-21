@@ -11,14 +11,14 @@ struct Keys {
 };
 
 // Window settings
-const unsigned int res = 1;
-const unsigned int pixelScale = 8 / res;
-const unsigned int SCR_WIDTH = 200 * res;
-const unsigned int SCR_HEIGHT = 150 * res;
-const unsigned int SCR_WIDTH_HALF = SCR_WIDTH / 2;
-const unsigned int SCR_HEIGHT_HALF = SCR_HEIGHT / 2;
-const unsigned int GLSCR_WIDTH = SCR_WIDTH * pixelScale;
-const unsigned int GLSCR_HEIGHT = SCR_HEIGHT * pixelScale;
+const int res = 1;
+const int pixelScale = 8 / res;
+const int SCR_WIDTH = 200 * res;
+const int SCR_HEIGHT = 150 * res;
+const int SCR_WIDTH_HALF = SCR_WIDTH / 2;
+const int SCR_HEIGHT_HALF = SCR_HEIGHT / 2;
+const int GLSCR_WIDTH = SCR_WIDTH * pixelScale;
+const int GLSCR_HEIGHT = SCR_HEIGHT * pixelScale;
 
 // Colors
 const RgbColor red = {255, 0, 0};

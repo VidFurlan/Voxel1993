@@ -1,8 +1,4 @@
-#include <iostream>
-
-#include "3D_ENGINE/window_defines.hpp"
 #include "3D_ENGINE/window.hpp"
-#include "3D_ENGINE/player.hpp"
 
 int main() {
     glfwSwapInterval(1);

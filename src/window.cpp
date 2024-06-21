@@ -1,4 +1,5 @@
 #include "3D_ENGINE/window.hpp"
+#include "renderer.hpp"
 
 Window mainWindow;
 
@@ -117,6 +118,8 @@ void Window::updateDisplay() {
     clearBackground();
     movePlayer();
     renderer.draw3D();
+    // renderer.drawFloor();
+    // renderer.testTextures();
     glFlush();
 }
 

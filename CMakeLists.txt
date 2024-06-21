@@ -11,18 +11,19 @@ set(LIBS ${LIBS} glad)
 include(FetchContent)
 FetchContent_Declare(
 	glm
-	GIT_REPOSITORY	https://github.com/g-truc/glm.git
-	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
+	GIT_REPOSITORY https://github.com/g-truc/glm.git
+	GIT_TAG bf71a834948186f4097caa076cd2663c69a10e1e # refs/tags/1.0.1
 )
 FetchContent_MakeAvailable(glm)
 
 # Header includes
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/include/3D_ENGINE)
 
 file(GLOB PROJECT_HEADERS 
     ${CMAKE_SOURCE_DIR}/include/3D_ENGINE/*.h
     ${CMAKE_SOURCE_DIR}/include/3D_ENGINE/*.hpp
+    ${CMAKE_SOURCE_DIR}/textures/*.h
+    ${CMAKE_SOURCE_DIR}/textures/*.hpp
 )
 
 set(SOURCES
@@ -32,8 +33,15 @@ set(SOURCES
     src/renderer.cpp
     src/wall.cpp
     src/sector.cpp
+    src/texture_list.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_HEADERS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/3D_ENGINE
+    ${CMAKE_SOURCE_DIR}/textures
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glad glfw glm::glm ${OPENGL_LIBRARIES})
