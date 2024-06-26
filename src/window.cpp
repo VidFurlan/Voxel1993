@@ -1,12 +1,15 @@
 #include "3D_ENGINE/window.hpp"
 #include "renderer.hpp"
+#include <climits>
+#include <future>
 
 Window mainWindow;
 
 Window::Window() {
     initGlfwSettings();
 
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+    // glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(GLSCR_WIDTH, GLSCR_HEIGHT, "3D Engine", NULL, NULL);
     if (window == NULL) {
@@ -16,7 +19,7 @@ Window::Window() {
     }
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     glfwSetKeyCallback(window, key_callback);
 
@@ -25,6 +28,9 @@ Window::Window() {
 
     glPointSize(pixelScale);
     glOrtho(0, GLSCR_WIDTH, 0, GLSCR_HEIGHT, -1, 1); 
+
+    frameBuffer = std::vector<std::vector<RgbColor>>(SCR_WIDTH, std::vector<RgbColor>(SCR_HEIGHT, backgroundColor));
+    zBuffer = std::vector<std::vector<float>>(SCR_WIDTH, std::vector<float>(SCR_HEIGHT, INT_MAX));
 }
 
 void Window::initGlfwSettings() {
@@ -42,11 +48,16 @@ void Window::initGlfwSettings() {
  * @param y Position y
  * @param rgbColor Color of the pixel
  */
-void Window::pixel(int x, int y, RgbColor rgbColor) {
-    glColor3ub(rgbColor.r, rgbColor.g, rgbColor.b); 
-    glBegin(GL_POINTS);
-    glVertex2i(x * pixelScale + 2, y * pixelScale + 2);
-    glEnd();
+void Window::drawPixel(int x, int y, RgbColor rgbColor) {
+    frameBuffer[x][y] = rgbColor;
+}
+
+void Window::drawPixel(int x, int y, RgbColor rgbColor, float depth) {
+    if (depth > zBuffer[x][y])
+        return;
+
+    frameBuffer[x][y] = rgbColor;
+    zBuffer[x][y] = depth;
 }
 
 /**
@@ -55,18 +66,18 @@ void Window::pixel(int x, int y, RgbColor rgbColor) {
 void Window::movePlayer() {
     // move up, down, left, right
     if (keys.a == 1 && keys.m == 0) {
-        player.angle -= player.speed;
+        player.angle -= player.speed * deltaTime;
         if (player.angle < 0)
             player.angle += 360;
     }
     if (keys.d == 1 && keys.m == 0) {
-        player.angle += player.speed;
+        player.angle += player.speed * deltaTime;
         if (player.angle > 359)
             player.angle -= 360;
     }
 
-    float dx = sin(player.angle * M_PI / 180) * player.speed;
-    float dy = cos(player.angle * M_PI / 180) * player.speed;
+    float dx = sin(player.angle * M_PI / 180) * player.speed * deltaTime;
+    float dy = cos(player.angle * M_PI / 180) * player.speed * deltaTime;
 
     if (keys.w == 1 && keys.m == 0) {
         player.x += dx;
@@ -89,13 +100,13 @@ void Window::movePlayer() {
 
     // move up, down, look up, look down
     if (keys.a == 1 && keys.m == 1)
-        player.lookAngle -= 1;
+        player.lookAngle -= 1 * deltaTime;
     if (keys.d == 1 && keys.m == 1)
-        player.lookAngle += 1;
+        player.lookAngle += 1 * deltaTime;
     if (keys.w == 1 && keys.m == 1)
-        player.z += player.speed;
+        player.z += player.speed * deltaTime;
     if (keys.s == 1 && keys.m == 1)
-        player.z -= player.speed;
+        player.z -= player.speed * deltaTime;
 
     // std::cout << "deltaTime: " <<() << std::endl;
     // std::cout << "keys: " << "w: " << keys.w << " s: " << keys.s << " a: " << keys.a << " d: " << keys.d << " m: " << keys.m << " sr: " << keys.sr << " sl: " << keys.sl << std::endl;
@@ -105,22 +116,60 @@ void Window::movePlayer() {
 /**
  * @brief Clear the background of the window using the background color
  */
-void Window::clearBackground() {
+void Window::clearBuffer() {
     for (int y = 0; y < SCR_HEIGHT; y++)
-        for (int x = 0; x < SCR_WIDTH; x++)
-            pixel(x, y, backgroundColor);
+        for (int x = 0; x < SCR_WIDTH; x++) {
+            frameBuffer[x][y] = backgroundColor;
+            zBuffer[x][y] = INT_MAX;
+        }
+}
+
+/**
+ * @brief Draw the buffer to the window
+ */
+void Window::drawBuffer() {
+    glBegin(GL_POINTS);
+    for (int y = 0; y < SCR_HEIGHT; y++) {
+        for (int x = 0; x < SCR_WIDTH; x++) {
+            glColor3ub(frameBuffer[x][y].r, frameBuffer[x][y].g, frameBuffer[x][y].b);
+            glVertex2i(x * pixelScale + 2, y * pixelScale + 2);
+        }
+    }
+    glEnd();
+}
+
+void Window::fpsCounter() {
+    double currentTime = glfwGetTime();
+    nbFrames++;
+    if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+        std::cout << 1000.0/double(nbFrames) << " ms/frame\n";
+        std::cout << double(nbFrames) << " fps\n";
+
+        nbFrames = 0;
+        lastTime += 1.0;
+    }
+}
+
+void Window::updateTime() {
+    double currentTime = glfwGetTime();
+    deltaTime = currentTime - lastTime;
+    deltaTime *= 100;
+    lastTime = currentTime;
 }
 
 /**
  * @brief Update window display
  */
 void Window::updateDisplay() {
-    clearBackground();
+    updateTime();
+    clearBuffer();
     movePlayer();
     renderer.draw3D();
+    drawBuffer();
     // renderer.drawFloor();
     // renderer.testTextures();
     glFlush();
+    fpsCounter();
 }
 
 void Window::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {

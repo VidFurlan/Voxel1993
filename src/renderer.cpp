@@ -14,8 +14,8 @@
 Renderer renderer;
 
 Renderer::Renderer() {
-    for (int i = 0; i < 1; i++) {
-        for (int j = 0; j < 1; j++) {
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
             sectors.push_back(Sector(0, 10, 10, 10, {
                 Wall(i * 10 + 0,  j * 10 + 0,  i * 10 + 10, j * 10 + 0, white),
                 Wall(i * 10 + 10, j * 10 + 0,  i * 10 + 10, j * 10 + 10, white),
@@ -52,7 +52,7 @@ void Renderer::testTextures() {
             int r = textures[t].textureMap[p + 0];
             int g = textures[t].textureMap[p + 1];
             int b = textures[t].textureMap[p + 2];
-            mainWindow.pixel(x, y, RgbColor{r, g, b});
+            mainWindow.drawPixel(x, y, RgbColor{r, g, b});
         }
 }
 
@@ -82,9 +82,9 @@ void Renderer::drawFloor() {
             if (ry < 0) ry = -ry + 1;
             if (rx <= 0 || ry <= 0 || rx >= 5 || ry >= 5) continue;
             if ((int)rx % 2 == (int)ry % 2)
-                mainWindow.pixel(x + SCR_WIDTH_HALF, y + SCR_HEIGHT_HALF, RgbColor{255, 0, 0});
+                mainWindow.drawPixel(x + SCR_WIDTH_HALF, y + SCR_HEIGHT_HALF, RgbColor{255, 0, 0});
             else
-                mainWindow.pixel(x + SCR_WIDTH_HALF, y + SCR_HEIGHT_HALF, RgbColor{0, 0, 255});
+                mainWindow.drawPixel(x + SCR_WIDTH_HALF, y + SCR_HEIGHT_HALF, RgbColor{0, 0, 255});
         }
     }
 }
@@ -126,7 +126,8 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
                 int r = std::max(textures[wallTexture].textureMap[p + 0] - wall.shade / 2, 0);
                 int g = std::max(textures[wallTexture].textureMap[p + 1] - wall.shade / 2, 0);
                 int b = std::max(textures[wallTexture].textureMap[p + 2] - wall.shade / 2, 0);
-                mainWindow.pixel(x, y, RgbColor{r, g, b});
+                float zDepth = 0;
+                mainWindow.drawPixel(x, y, RgbColor{r, g, b}, zDepth);
 
                 verticalStart += verticalStep;
             }
@@ -169,12 +170,12 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 
                 if (rx < 0) rx = -rx + 1;
                 if (ry < 0) ry = -ry + 1;
-                int _texture = 0;
-                int p=(int)(textures[_texture].height - ((int)ry%textures[_texture].height)-1)*3*textures[_texture].width + ((int)rx%textures[_texture].width)*3;
-                int r=textures[_texture].textureMap[p+0];
-                int g=textures[_texture].textureMap[p+1];
-                int b=textures[_texture].textureMap[p+2];
-                mainWindow.pixel(xNew+xOffset,y+yOffset,RgbColor{r,g,b});            
+                int _texture = 1;
+                int p = (int)(textures[_texture].height - ((int)ry%textures[_texture].height)-1)*3*textures[_texture].width + ((int)rx%textures[_texture].width)*3;
+                int r = textures[_texture].textureMap[p + 0];
+                int g = textures[_texture].textureMap[p + 1];
+                int b = textures[_texture].textureMap[p + 2];
+                mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b});            
             }
         }
     }

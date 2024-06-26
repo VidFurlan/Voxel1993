@@ -2,7 +2,7 @@
 #define GRASS_WIDTH 16
 
 // array size is 768
-const unsigned char grassTexturePointer[768] = {
+static const unsigned char grassTexturePointer[] = {
     106, 170, 83, 97, 158, 76, 97, 158, 76, 106, 170, 83, 106, 170, 83, 106, 
     170, 83, 97, 158, 76, 97, 158, 76, 97, 158, 76, 97, 158, 76, 97, 158, 
     76, 106, 170, 83, 106, 170, 83, 97, 158, 76, 97, 158, 76, 106, 170, 83, 
