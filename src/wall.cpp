@@ -17,8 +17,3 @@ Wall::Wall(float _xBottom1, float _yBottom1, float _xBottom2, float _yBottom2, R
 	if (_shade > 90) _shade = 90 - (_shade - 90);
 	shade = _shade;
 }
-
-float Wall::getDistanceToPlayer(float xBottom1, float yBottom1, float xBottom2, float yBottom2) {
-	distanceToPlayer = sqrt(pow((xBottom1 + xBottom2) / 2, 2) + pow((yBottom1 + yBottom2) / 2, 2));
-	return distanceToPlayer;
-}

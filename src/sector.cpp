@@ -1,4 +1,5 @@
 #include "3D_ENGINE/sector.hpp"
+#include <iostream>
 
 #include "texture_list.hpp"
 

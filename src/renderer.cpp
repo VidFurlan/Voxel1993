@@ -17,18 +17,18 @@
 Renderer renderer;
 
 Renderer::Renderer() {
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
-			for (int k = 0; k < 3; k++) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			for (int k = 0; k < 4; k++) {
 				sectors.push_back(
-					Sector(k * 10 + 0, k * 10 + 10, 10, 10,
+					Sector(k * 10 + 0, k * 10 + 10, 0, 0,
 						   {
 							   Wall(i * 10 + 0, j * 10 + 0, i * 10 + 10, j * 10 + 0, white),
 							   Wall(i * 10 + 10, j * 10 + 0, i * 10 + 10, j * 10 + 10, white),
 							   Wall(i * 10 + 10, j * 10 + 10, i * 10 + 0, j * 10 + 10, white),
 							   Wall(i * 10 + 0, j * 10 + 10, i * 10 + 0, j * 10 + 0, white),
 						   },
-						   RgbColor{106, 170, 83}, RgbColor{106, 170, 83}));
+						   white, white));
 			}
 		}
 	}
@@ -147,7 +147,7 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 				int g = std::max(textures[wallTexture].textureMap[p + 1] - wall.shade / 2, 0);
 				int b = std::max(textures[wallTexture].textureMap[p + 2] - wall.shade / 2, 0);
 
-				mainWindow.drawPixel(x, y, RgbColor{r, g, b}, wall.distanceToPlayer);
+				mainWindow.drawPixel(x, y, RgbColor{r, g, b}, sector.distanceToPlayer);
 
 				verticalStart += verticalStep;
 			}
@@ -199,7 +199,9 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 				int g = textures[_texture].textureMap[p + 1];
 				int b = textures[_texture].textureMap[p + 2];
 
-				mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b}, INT_MAX);
+				mainWindow.drawPixel(
+					xNew + xOffset, y + yOffset, RgbColor{r, g, b},
+					sector.distanceToPlayer + (sector.surfaceOrientation == 1 ? 0.01 : 0));
 			}
 		}
 	}
@@ -208,14 +210,10 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 void Renderer::draw3D() {
 	float cs = cos(player.angle * M_PI / 180);
 	float sn = sin(player.angle * M_PI / 180);
-
-	// std::sort(sectors.begin(), sectors.end(), [](Sector& a, Sector&
-	// b) {
-	//     return a.distanceToPlayer > b.distanceToPlayer;
-	// });
-
-	std::cout << "\033[2J";
-	std::cout << player.x << " " << player.y << " " << player.z << std::endl;
+    
+    // Uncomment to use painter's algorithm
+	// std::sort(sectors.begin(), sectors.end(),
+	// 		  [](Sector &a, Sector &b) { return a.distanceToPlayer > b.distanceToPlayer; });
 
 	for (Sector &sector : sectors) {
 		sector.distanceToPlayer = 0;
@@ -255,9 +253,6 @@ void Renderer::draw3D() {
 				wall.wallX[3] = wall.wallX[1];
 				wall.wallY[3] = wall.wallY[1];
 
-				sector.distanceToPlayer += wall.getDistanceToPlayer(wall.wallX[0], wall.wallY[0],
-																	wall.wallX[1], wall.wallY[1]);
-
 				wall.wallZ[0] =
 					sector.zBottom - player.z + ((player.lookAngle * wall.wallY[0]) / 32.0);
 				wall.wallZ[1] =
@@ -266,9 +261,13 @@ void Renderer::draw3D() {
 					sector.zTop - player.z + ((player.lookAngle * wall.wallY[0]) / 32.0);
 				wall.wallZ[3] =
 					sector.zTop - player.z + ((player.lookAngle * wall.wallY[1]) / 32.0);
+
+				if (orientation == 0)
+					sector.distanceToPlayer += sqrt(pow((wall.wallX[0] + wall.wallX[1]) / 2, 2) +
+													pow((wall.wallY[0] + wall.wallY[1]) / 2, 2));
 			}
 
-			sector.distanceToPlayer /= sector.walls.size();
+			if (orientation == 0) sector.distanceToPlayer /= sector.walls.size();
 
 			for (Wall &wall : sector.walls) {
 				// Check if both bottom points behind player after

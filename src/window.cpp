@@ -10,8 +10,10 @@ Window mainWindow;
 Window::Window() {
 	initGlfwSettings();
 
+    // Performance testing - disable double buffering
 	// glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-	// glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	window = glfwCreateWindow(GLSCR_WIDTH, GLSCR_HEIGHT, "3D Engine", NULL, NULL);
 	if (window == NULL) {
@@ -138,12 +140,12 @@ void Window::drawBuffer() {
 void Window::fpsCounter() {
 	double currentTime = glfwGetTime();
 	nbFrames++;
-	if (currentTime - lastTime >= 1.0) {  // If last prinf() was more than 1 sec ago
+	if (currentTime - lastFpsTime >= 20.0) {  // If last print was more than 1 sec ago
 		std::cout << 1000.0 / double(nbFrames) << " ms/frame\n";
 		std::cout << double(nbFrames) << " fps\n";
 
 		nbFrames = 0;
-		lastTime += 1.0;
+		lastFpsTime += 20.0;
 	}
 }
 

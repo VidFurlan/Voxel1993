@@ -44,6 +44,32 @@ World is going to be split into segments made up of chunks.
 - [ ] Basic load/save system
 - [ ] World segmentation
 
+## Progress
+
+### First Major Performance Improvement
+First major performance improvmement was gaind by switching from a painters algorithm to a Z-Buffering algorithm.
+
+#### Test on 4x4x4 chunk
+As expected Z-Buffering is faster than the painters algorithm. By a factor of 1.33x.
+|                   | Z-Buffering           | Painters Algorithm    |
+|---                |---                    |---                    |
+| Time per frame    | 0.0277323             | 0.0368229             |
+| Average FPS       | 600.983               | 452.616               |
+
+#### Test on 32x32x32 chunk
+Now this is wieard. The difference between the two algorithms is not as big as expected. Thats because the we are still sorting a small number of voxels.
+And since the only difference is that the painters algorithm sorts the voxels before rendering them (since I didn't remove the Z-Buffering implementation),
+it gets to write to the Z-Buffer only once (since the voxels are already sorted). While the Z-Buffering algorithm writes to the Z-Buffer for every voxel that
+is closer to the camera. This is why the Z-Buffering algorithm is not much faster than the painters algorithm (at least that's what I think).
+|                   | Z-Buffering           | Painters Algorithm    |
+|---                |---                    |---                    |
+| Time per frame    | 3.83142               | 4.1841                |
+| Average FPS       | 13.05                 | 11.95                 |
+
+#### Test on 64x64x64 chunk
+While testing on a 64x64x64 chunk both of the algorithms are slow since I don't have any other optimizations yet. So
+the testing was pretty pointless. If you're still wandering the Z-Buffering rendered at 5 FPS while the painters algorithm struggled to reach a single FPS.
+
 ## Resources
 - [YouTube - 3DSage](https://www.youtube.com/@3DSage) - Basic 3d engine tutorial series
 - [YouTube - Cem Yuksel](https://www.youtube.com/@cem_yuksel) - General 3d graphics tutorials

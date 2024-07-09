@@ -21,6 +21,7 @@ class Window {
 	Keys keys;
 
 	double lastTime = glfwGetTime();
+	double lastFpsTime = glfwGetTime();
 	int nbFrames = 0;
 
 	std::vector<std::vector<float>> zBuffer;

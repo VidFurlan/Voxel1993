@@ -14,10 +14,8 @@ class Wall {
 	Texture *texture;
 	int uvU = 1, uvV = 1;
 	int shade;
-	float distanceToPlayer;
 
 	float wallX[4], wallY[4], wallZ[4];
 
 	Wall(float xBottom1, float yBottom1, float xBottom2, float yBottom2, RgbColor color);
-	float getDistanceToPlayer(float xBottom1, float yBottom1, float xBottom2, float yBottom2);
 };
