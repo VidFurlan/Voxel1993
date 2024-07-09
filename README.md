@@ -24,7 +24,7 @@ bear -- make # For generating compile_commands.json
 Rendering is currently done using a Z-Buffering algorithm. Later I plan to combine this with a Voxel Octree
 in combination with multi-threading to render the world. Z-Buffering will prevent overdraw while using multi-threading.
 - [x] ~~Painters algorithm for rendering (antioptimization)~~
-- [ ] Z-Buffering for rendering (partially implemented)
+- [x] Z-Buffering for rendering
 - [ ] Voxel Octree
 
 ### Chunking System
