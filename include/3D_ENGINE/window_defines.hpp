@@ -1,13 +1,13 @@
 #pragma once
 
 struct RgbColor {
-    int r, g, b;
+	int r, g, b;
 };
 
 struct Keys {
-    int w = 0, s = 0, a = 0, d = 0;     // move up, down, left, right
-    int sl = 0, sr = 0;                 // strafe left, right
-    int m = 0;                          // move up, down, look up, down
+	int w = 0, s = 0, a = 0, d = 0;	 // move up, down, left, right
+	int sl = 0, sr = 0;				 // strafe left, right
+	int m = 0;						 // move up, down, look up, down
 };
 
 // Window settings
