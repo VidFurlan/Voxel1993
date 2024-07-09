@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
+#include <climits>
 #include <cmath>
 
 #include "3D_ENGINE/player.hpp"
@@ -175,9 +176,7 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 
 			int yStart = y1 - SCR_HEIGHT_HALF, yEnd = y2 - yOffset;
 
-																																																float distance = sqrt(pow(sector.xPosition + 5, 2) + pow(sector.yPosition + 5, 2) + pow(sector.z)
-
-            for (int y = yStart; y < yEnd; y++) {
+			for (int y = yStart; y < yEnd; y++) {
 				float z = y + lookAngle;
 				if (z == 0) z = 0.0001;
 
@@ -200,8 +199,8 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 				int g = textures[_texture].textureMap[p + 1];
 				int b = textures[_texture].textureMap[p + 2];
 
-				mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b}, distance);
-            }
+				mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b}, INT_MAX);
+			}
 		}
 	}
 }
