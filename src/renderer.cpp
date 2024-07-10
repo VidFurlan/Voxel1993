@@ -21,7 +21,7 @@ Renderer::Renderer() {
 		for (int j = 0; j < 4; j++) {
 			for (int k = 0; k < 4; k++) {
 				sectors.push_back(
-					Sector(k * 10 + 0, k * 10 + 10, 0, 0,
+					Sector(k * 10 + 0, k * 10 + 10,
 						   {
 							   Wall(i * 10 + 0, j * 10 + 0, i * 10 + 10, j * 10 + 0, white),
 							   Wall(i * 10 + 10, j * 10 + 0, i * 10 + 10, j * 10 + 10, white),
@@ -34,8 +34,10 @@ Renderer::Renderer() {
 	}
 }
 
+/**
+ * @brief Clip wall edges to the edge of the screen if they are behind the player
+ */
 void Renderer::clipBehindPlayer(float *x1, float *y1, float *z1, float *x2, float *y2, float *z2) {
-	// If both points behind the player
 	if (*y1 < 1 && *y2 < 1) return;
 
 	if (*y1 < 1) {
@@ -51,6 +53,9 @@ void Renderer::clipBehindPlayer(float *x1, float *y1, float *z1, float *x2, floa
 	}
 }
 
+/**
+ * @brief Draw a texture on the screen (testing function)
+ */
 void Renderer::testTextures() {
 	int t = 0;
 	for (int y = 0; y < 16; y++)
@@ -63,6 +68,9 @@ void Renderer::testTextures() {
 		}
 }
 
+/**
+ * @brief Draw an infinite floor (testing function)
+ */
 void Renderer::drawFloor() {
 	float lookAngle = -player.lookAngle * 6.2;
 	if (lookAngle > SCR_HEIGHT) lookAngle = SCR_HEIGHT;
@@ -98,6 +106,9 @@ void Renderer::drawFloor() {
 	}
 }
 
+/**
+ * @brief Draw a wall on the screen given its coordinates after calculating the perspective
+ */
 void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, int topPos1,
 						int topPos2, RgbColor color, Sector &sector, Wall &wall, int orientation) {
 	int wallTexture = 0;
@@ -168,7 +179,7 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 				wallOffset = sector.zTop;
 			}
 
-			float lookAngle = -player.lookAngle * 6.2;
+			float lookAngle = -player.lookAngle * 6.2; // 6.2 just works (obtained by trial)
 			float moveVertical = (player.z - wallOffset) / (float)yOffset;
 
 			if (lookAngle > SCR_HEIGHT) lookAngle = SCR_HEIGHT;
@@ -207,11 +218,14 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 	}
 }
 
+/**
+ * @brief Render the 3D scene
+ */
 void Renderer::draw3D() {
 	float cs = cos(player.angle * M_PI / 180);
 	float sn = sin(player.angle * M_PI / 180);
-    
-    // Uncomment to use painter's algorithm
+
+	// Uncomment to use painter's algorithm
 	// std::sort(sectors.begin(), sectors.end(),
 	// 		  [](Sector &a, Sector &b) { return a.distanceToPlayer > b.distanceToPlayer; });
 
@@ -270,8 +284,7 @@ void Renderer::draw3D() {
 			if (orientation == 0) sector.distanceToPlayer /= sector.walls.size();
 
 			for (Wall &wall : sector.walls) {
-				// Check if both bottom points behind player after
-				// clipping
+				// Check if both bottom points behind player
 				if (wall.wallY[0] < 1 && wall.wallY[1] < 1) continue;
 
 				// Clip wall
@@ -293,27 +306,6 @@ void Renderer::draw3D() {
 						 static_cast<int>(wall.wallY[0]), static_cast<int>(wall.wallY[1]),
 						 static_cast<int>(wall.wallY[2]), static_cast<int>(wall.wallY[3]),
 						 wall.color, sector, wall, orientation);
-
-				// if (wall.wallX[0] >= 0 && wall.wallX[0] < SCR_WIDTH
-				// && wall.wallY[0] >= 0 && wall.wallY[0] <
-				// SCR_HEIGHT)
-				//     mainWindow.pixel(static_cast<int>(wall.wallX[0]),
-				//     static_cast<int>(wall.wallY[0]), debugColor);
-				// if (wall.wallX[1] >= 0 && wall.wallX[1] < SCR_WIDTH
-				// && wall.wallY[1] >= 0 && wall.wallY[1] <
-				// SCR_HEIGHT)
-				//     mainWindow.pixel(static_cast<int>(wall.wallX[1]),
-				//     static_cast<int>(wall.wallY[1]), debugColor);
-				// if (wall.wallX[2] >= 0 && wall.wallX[2] < SCR_WIDTH
-				// && wall.wallY[2] >= 0 && wall.wallY[2] <
-				// SCR_HEIGHT)
-				//     mainWindow.pixel(static_cast<int>(wall.wallX[2]),
-				//     static_cast<int>(wall.wallY[2]), debugColor);
-				// if (wall.wallX[3] >= 0 && wall.wallX[3] < SCR_WIDTH
-				// && wall.wallY[3] >= 0 && wall.wallY[3] <
-				// SCR_HEIGHT)
-				//     mainWindow.pixel(static_cast<int>(wall.wallX[3]),
-				//     static_cast<int>(wall.wallY[3]), debugColor);
 			}
 		}
 	}

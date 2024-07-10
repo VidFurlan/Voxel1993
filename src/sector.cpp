@@ -1,16 +1,15 @@
 #include "3D_ENGINE/sector.hpp"
+
 #include <iostream>
 
 #include "texture_list.hpp"
 
-Sector::Sector(float _zBottom, float _zTop, float _xPosition, float _yPosition,
-			   std::vector<Wall> _walls, RgbColor _topColor, RgbColor _bottomColor) {
-	zBottom = _zBottom;
-	zTop = _zTop;
-	xPosition = _xPosition;
-	yPosition = _yPosition;
-	walls = _walls;
-	topColor = _topColor;
-	bottomColor = _bottomColor;
-	surfaceTexture = &textures[0];
+Sector::Sector(float zBottom, float zTop, std::vector<Wall> walls, RgbColor topColor,
+			   RgbColor bottomColor) {
+	this->zBottom = zBottom;
+	this->zTop = zTop;
+	this->walls = walls;
+	this->topColor = topColor;
+	this->bottomColor = bottomColor;
+	this->surfaceTexture = &textures[0];
 }

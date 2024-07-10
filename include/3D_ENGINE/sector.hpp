@@ -22,6 +22,6 @@ class Sector {
 	std::vector<float> surfacePoints = std::vector<float>(SCR_WIDTH);
 	int surfaceOrientation;
 
-	Sector(float zBottom, float zTop, float xPosition, float yPosition, std::vector<Wall> walls,
-		   RgbColor topColor, RgbColor bottomColor);
+	Sector(float zBottom, float zTop, std::vector<Wall> walls, RgbColor topColor,
+		   RgbColor bottomColor);
 };
