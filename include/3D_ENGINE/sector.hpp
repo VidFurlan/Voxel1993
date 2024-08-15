@@ -9,19 +9,18 @@
 
 class Sector {
    public:
-	float zBottom, zTop;
-	float xPosition, yPosition;
+	Sector(float zBottom, float zTop, std::vector<Wall> walls, RgbColor topColor,
+		   RgbColor bottomColor);
+
+	std::vector<Wall> walls;
+	
+    float zBottom, zTop;
 	float distanceToPlayer;
 
 	RgbColor topColor, bottomColor;
 	Texture *surfaceTexture;
 	int surfaceScale = 1;
 
-	std::vector<Wall> walls;
-
 	std::vector<float> surfacePoints = std::vector<float>(SCR_WIDTH);
 	int surfaceOrientation;
-
-	Sector(float zBottom, float zTop, std::vector<Wall> walls, RgbColor topColor,
-		   RgbColor bottomColor);
 };

@@ -34,6 +34,8 @@ set(SOURCES
     src/wall.cpp
     src/sector.cpp
     src/texture_list.cpp
+    src/renderer_manager.cpp
+    src/chunk.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_HEADERS})

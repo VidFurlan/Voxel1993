@@ -16,6 +16,16 @@
  *
  */
 class Window {
+   public:
+	Window();
+
+	void updateDisplay();
+	void drawPixel(int x, int y, RgbColor rgbColor);
+	void drawPixel(int x, int y, RgbColor rgbColor, float depth);
+
+	double deltaTime;
+	GLFWwindow *window;
+
    private:
 	int tick = 0;
 	Keys keys;
@@ -34,16 +44,6 @@ class Window {
 	void clearBackground();
 	void fpsCounter();
 	void updateTime();
-
-   public:
-	double deltaTime;
-	GLFWwindow *window;
-
-	Window();
-
-	void updateDisplay();
-	void drawPixel(int x, int y, RgbColor rgbColor);
-	void drawPixel(int x, int y, RgbColor rgbColor, float depth);
 	void drawBuffer();
 	void clearBuffer();
 };

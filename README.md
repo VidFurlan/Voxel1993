@@ -76,3 +76,5 @@ the testing was pretty pointless. If you're still wandering the Z-Buffering rend
 
 - [Blog - The Infinite Loop](https://geidav.wordpress.com/) - Voxel Octree
 - [Blog - Voxel Compression](https://eisenwave.github.io/voxel-compression-docs/index.html) - Voxel Compression
+
+- [Voxel.Wiki](https://voxel.wiki/) - General voxel algorithms

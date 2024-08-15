@@ -1,9 +1,8 @@
 #include "3D_ENGINE/window.hpp"
 
 #include <climits>
-#include <future>
 
-#include "renderer.hpp"
+#include "renderer_manager.hpp"
 
 Window mainWindow;
 
@@ -11,7 +10,7 @@ Window::Window() {
 	initGlfwSettings();
 
     // Performance testing - disable double buffering
-	// glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
@@ -140,12 +139,12 @@ void Window::drawBuffer() {
 void Window::fpsCounter() {
 	double currentTime = glfwGetTime();
 	nbFrames++;
-	if (currentTime - lastFpsTime >= 20.0) {  // If last print was more than 1 sec ago
+	if (currentTime - lastFpsTime >= 1.0) {  // If last print was more than 1 sec ago
 		std::cout << 1000.0 / double(nbFrames) << " ms/frame\n";
 		std::cout << double(nbFrames) << " fps\n";
 
 		nbFrames = 0;
-		lastFpsTime += 20.0;
+		lastFpsTime += 1.0;
 	}
 }
 
@@ -163,7 +162,7 @@ void Window::updateDisplay() {
 	updateTime();
 	clearBuffer();
 	movePlayer();
-	renderer.draw3D();
+    rendererManager.render();
 	drawBuffer();
 	// renderer.drawFloor();
 	// renderer.testTextures();

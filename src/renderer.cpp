@@ -13,43 +13,24 @@
 #include "3D_ENGINE/wall.hpp"
 #include "3D_ENGINE/window.hpp"
 #include "3D_ENGINE/window_defines.hpp"
-
-Renderer renderer;
-
-Renderer::Renderer() {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			for (int k = 0; k < 4; k++) {
-				sectors.push_back(
-					Sector(k * 10 + 0, k * 10 + 10,
-						   {
-							   Wall(i * 10 + 0, j * 10 + 0, i * 10 + 10, j * 10 + 0, white),
-							   Wall(i * 10 + 10, j * 10 + 0, i * 10 + 10, j * 10 + 10, white),
-							   Wall(i * 10 + 10, j * 10 + 10, i * 10 + 0, j * 10 + 10, white),
-							   Wall(i * 10 + 0, j * 10 + 10, i * 10 + 0, j * 10 + 0, white),
-						   },
-						   white, white));
-			}
-		}
-	}
-}
+#include "renderer_manager.hpp"
 
 /**
  * @brief Clip wall edges to the edge of the screen if they are behind the player
  */
-void Renderer::clipBehindPlayer(float *x1, float *y1, float *z1, float *x2, float *y2, float *z2) {
-	if (*y1 < 1 && *y2 < 1) return;
+void Renderer::clipBehindPlayer(float &x1, float &y1, float &z1, float &x2, float &y2, float &z2) {
+	if (y1 < 1 && y2 < 1) return;
 
-	if (*y1 < 1) {
-		float t = (1 - *y1) / (*y2 - *y1);
-		*x1 = *x1 + t * (*x2 - *x1);
-		*y1 = 1;
-		*z1 = *z1 + t * (*z2 - *z1);
-	} else if (*y2 < 1) {
-		float t = (1 - *y2) / (*y1 - *y2);
-		*x2 = *x2 + t * (*x1 - *x2);
-		*y2 = 1;
-		*z2 = *z2 + t * (*z1 - *z2);
+	if (y1 < 1) {
+		float t = (1 - y1) / (y2 - y1);
+		x1 = x1 + t * (x2 - x1);
+		y1 = 1;
+		z1 = z1 + t * (z2 - z1);
+	} else if (y2 < 1) {
+		float t = (1 - y2) / (y1 - y2);
+		x2 = x2 + t * (x1 - x2);
+		y2 = 1;
+		z2 = z2 + t * (z1 - z2);
 	}
 }
 
@@ -221,7 +202,9 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 /**
  * @brief Render the 3D scene
  */
-void Renderer::draw3D() {
+void Renderer::renderChunk(Chunk *chunk) {
+    sectors = chunk->sectors;
+
 	float cs = cos(player.angle * M_PI / 180);
 	float sn = sin(player.angle * M_PI / 180);
 
@@ -288,10 +271,10 @@ void Renderer::draw3D() {
 				if (wall.wallY[0] < 1 && wall.wallY[1] < 1) continue;
 
 				// Clip wall
-				clipBehindPlayer(&wall.wallX[0], &wall.wallY[0], &wall.wallZ[0], &wall.wallX[1],
-								 &wall.wallY[1], &wall.wallZ[1]);
-				clipBehindPlayer(&wall.wallX[2], &wall.wallY[2], &wall.wallZ[2], &wall.wallX[3],
-								 &wall.wallY[3], &wall.wallZ[3]);
+				clipBehindPlayer(wall.wallX[0], wall.wallY[0], wall.wallZ[0], wall.wallX[1],
+								 wall.wallY[1], wall.wallZ[1]);
+				clipBehindPlayer(wall.wallX[2], wall.wallY[2], wall.wallZ[2], wall.wallX[3],
+								 wall.wallY[3], wall.wallZ[3]);
 
 				wall.wallX[0] = wall.wallX[0] * 200 / wall.wallY[0] + SCR_WIDTH_HALF;
 				wall.wallY[0] = wall.wallZ[0] * 200 / wall.wallY[0] + SCR_HEIGHT_HALF;
@@ -309,4 +292,6 @@ void Renderer::draw3D() {
 			}
 		}
 	}
+
+    rendererManager.freeRenderer(this);
 }
