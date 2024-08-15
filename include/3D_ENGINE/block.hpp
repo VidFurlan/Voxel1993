@@ -10,7 +10,9 @@ class Block {
    public:
 	bool isActive() { return active; }
 	void setActive(bool active);
+    void setBlockType(BlockType blockType) { this->blockType = blockType; }
 
+    static const int BLOCK_SIZE = 10;
    private:
 	bool active;
 	BlockType blockType;

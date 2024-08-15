@@ -9,7 +9,7 @@
 RendererManager rendererManager;
 
 RendererManager::RendererManager() {
-    chunksToRender.push(new Chunk());
+    chunksToRender.push(new Chunk(0, 0, 0));
 }
 
 void RendererManager::render() {
