@@ -8,9 +8,7 @@
 
 #include "3D_ENGINE/player.hpp"
 #include "3D_ENGINE/renderer.hpp"
-#include "3D_ENGINE/sector.hpp"
 #include "3D_ENGINE/texture_list.hpp"
-#include "3D_ENGINE/wall.hpp"
 #include "3D_ENGINE/window.hpp"
 #include "3D_ENGINE/window_defines.hpp"
 #include "block.hpp"
@@ -204,6 +202,7 @@ void Renderer::drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, in
 /**
  * @brief Render the 3D scene
  */
+/*
 void Renderer::renderChunk(Chunk *chunk) {
 	float cs = cos(player.angle * M_PI / 180);
 	float sn = sin(player.angle * M_PI / 180);
@@ -308,4 +307,101 @@ void Renderer::renderChunk(Chunk *chunk) {
 	}
 
 	rendererManager.freeRenderer(this);
+}*/
+
+/**
+ * @brief Render the block
+ */
+void Renderer::renderBlock(Block *block, int x, int y, int z) {
+	float cs = cos(player.angle * M_PI / 180);
+	float sn = sin(player.angle * M_PI / 180);
+
+    distanceToPlayer = 0;
+
+    blockX = globalX + x * Block::BLOCK_SIZE;
+    blockY = globalY + y * Block::BLOCK_SIZE;
+    blockZBottom = globalZ + z * Block::BLOCK_SIZE;
+    blockZTop = blockZBottom + Block::BLOCK_SIZE;
+
+    int cycles = 2;
+
+    if (player.z < blockZBottom) {
+        surfaceOrientation = 1;
+        std::fill(surfacePoints.begin(), surfacePoints.end(), SCR_HEIGHT);
+    } else if (player.z > blockZTop) {
+        surfaceOrientation = 2;
+        std::fill(surfacePoints.begin(), surfacePoints.end(), 0);
+    } else {
+        surfaceOrientation = 0;
+        cycles = 1;
+    }
+
+    for (int orientation = 0; orientation < cycles; orientation++) {
+        for (int w = 0; w < 4; w++) {
+            xBottom1[w] = blockX + (w == 1 || w == 2) * Block::BLOCK_SIZE;
+            yBottom1[w] = blockY + (w == 2 || w == 3) * Block::BLOCK_SIZE;
+            xBottom2[w] = blockX + (w == 0 || w == 1) * Block::BLOCK_SIZE;
+            yBottom2[w] = blockY + (w == 1 || w == 2) * Block::BLOCK_SIZE;
+
+            float x1 = xBottom1[w] - player.x, y1 = yBottom1[w] - player.y;
+            float x2 = xBottom2[w] - player.x, y2 = yBottom2[w] - player.y;
+
+            if (orientation == 1) {
+                std::swap(x1, x2);
+                std::swap(y1, y2);
+            }
+
+            wallX[w][0] = x1 * cs - y1 * sn;
+            wallY[w][0] = y1 * cs + x1 * sn;
+
+            wallX[w][1] = x2 * cs - y2 * sn;
+            wallY[w][1] = y2 * cs + x2 * sn;
+
+            wallX[w][2] = wallX[w][0];
+            wallY[w][2] = wallY[w][0];
+
+            wallX[w][3] = wallX[w][1];
+            wallY[w][3] = wallY[w][1];
+
+            wallZ[w][0] =
+                blockZBottom - player.z + ((player.lookAngle * wallY[w][0]) / 32.0);
+            wallZ[w][1] =
+                blockZBottom - player.z + ((player.lookAngle * wallY[w][1]) / 32.0);
+            wallZ[w][2] =
+                blockZTop - player.z + ((player.lookAngle * wallY[w][0]) / 32.0);
+            wallZ[w][3] =
+                blockZTop - player.z + ((player.lookAngle * wallY[w][1]) / 32.0);
+
+            if (orientation == 0)
+                distanceToPlayer += sqrt(pow((wallX[w][0] + wallX[w][1]) / 2, 2) +
+                        pow((wallY[w][0] + wallY[w][1]) / 2, 2));
+        }
+
+        if (orientation == 0) distanceToPlayer /= 4;
+
+        for (int w = 0; w < 4; w++) {
+            // Check if both bottom points behind player
+            if (wallY[w][0] < 1 && wallY[w][1] < 1) continue;
+
+            // Clip wall
+            clipBehindPlayer(wallX[w][0], wallY[w][0], wallZ[w][0], wallX[w][1],
+                    wallY[w][1], wallZ[w][1]);
+            clipBehindPlayer(wallX[w][2], wallY[w][2], wallZ[w][2], wallX[w][3],
+                    wallY[w][3], wallZ[w][3]);
+
+            wallX[w][0] = wallX[w][0] * 200 / wallY[w][0] + SCR_WIDTH_HALF;
+            wallY[w][0] = wallZ[w][0] * 200 / wallY[w][0] + SCR_HEIGHT_HALF;
+            wallX[w][1] = wallX[w][1] * 200 / wallY[w][1] + SCR_WIDTH_HALF;
+            wallY[w][1] = wallZ[w][1] * 200 / wallY[w][1] + SCR_HEIGHT_HALF;
+            wallX[w][2] = wallX[w][2] * 200 / wallY[w][2] + SCR_WIDTH_HALF;
+            wallY[w][2] = wallZ[w][2] * 200 / wallY[w][2] + SCR_HEIGHT_HALF;
+            wallX[w][3] = wallX[w][3] * 200 / wallY[w][3] + SCR_WIDTH_HALF;
+            wallY[w][3] = wallZ[w][3] * 200 / wallY[w][3] + SCR_HEIGHT_HALF;
+
+            drawWall(static_cast<int>(wallX[w][0]), static_cast<int>(wallX[w][1]),
+                    static_cast<int>(wallY[w][0]), static_cast<int>(wallY[w][1]),
+                    static_cast<int>(wallY[w][2]), static_cast<int>(wallY[w][3]),
+                    orientation);
+        }
+    }
 }

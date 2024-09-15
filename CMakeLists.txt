@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenGL REQUIRED)
 
-add_library(glad src/glad.c)
+add_library(glad include/glad/glad.c)
 set(LIBS ${LIBS} glad)
 
 include(FetchContent)
@@ -32,7 +32,6 @@ set(SOURCES
     src/player.cpp
     src/renderer.cpp
     src/wall.cpp
-    src/sector.cpp
     src/texture_list.cpp
     src/renderer_manager.cpp
     src/chunk.cpp

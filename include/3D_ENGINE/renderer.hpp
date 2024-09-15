@@ -5,28 +5,15 @@
 #include <cmath>
 #include <vector>
 
-#include "3D_ENGINE/sector.hpp"
 #include "3D_ENGINE/window_defines.hpp"
-#include "chunk.hpp"
-#include "wall.hpp"
+#include "block.hpp"
+#include "texture.hpp"
 
 class Renderer {
    public:
-	void renderChunk(Chunk *chunk);
-	void draw3D();
+    void renderBlock(Block *block, int x, int y, int z);
 
    private:
-	std::vector<Sector> sectors;
-
-	static void clipBehindPlayer(float &x1, float &y1, float &z1, float &x2, float &y2, float &z2);
-	void drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, int topPos1, int topPos2,
-				  int orientation);
-    void drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, int topPos1,
-						int topPos2, RgbColor color, Sector &sector, Wall &wall, int orientation);
-
-	// Test functions
-	void testTextures();
-	void drawFloor();
 
 	float distanceToPlayer = 0;
 
@@ -43,4 +30,12 @@ class Renderer {
 	int surfaceScale = 1;
 	int uvU = 1, uvV = 1;
 	int shade;
+
+	static void clipBehindPlayer(float &x1, float &y1, float &z1, float &x2, float &y2, float &z2);
+	void drawWall(int xPos1, int xPos2, int bottomPos1, int bottomPos2, int topPos1, int topPos2,
+				  int orientation);
+
+    // Test functions
+	void testTextures();
+	void drawFloor();
 };

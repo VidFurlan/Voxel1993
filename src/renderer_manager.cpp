@@ -4,6 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "chunk.hpp"
 #include "renderer.hpp"
 
 RendererManager rendererManager;
@@ -29,7 +30,7 @@ void RendererManager::render() {
         busyRenderers.insert(renderer);
         freeRenderers.erase(renderer);
 
-		std::thread renderThread(&Renderer::renderChunk, renderer, chunk);
+		std::thread renderThread(&Chunk::render, chunk, renderer);
         renderThread.detach();
     }
 
