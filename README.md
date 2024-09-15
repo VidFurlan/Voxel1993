@@ -76,5 +76,6 @@ the testing was pretty pointless. If you're still wandering the Z-Buffering rend
 
 - [Blog - The Infinite Loop](https://geidav.wordpress.com/) - Voxel Octree
 - [Blog - Voxel Compression](https://eisenwave.github.io/voxel-compression-docs/index.html) - Voxel Compression
+- [Blog - Building a High-Performance Voxel Engine in Unity](https://medium.com/@adamy1558/building-a-high-performance-voxel-engine-in-unity-a-step-by-step-guide-part-1-voxels-chunks-86275c079fb8) - General creation of a voxel engine
 
 - [Voxel.Wiki](https://voxel.wiki/) - General voxel algorithms
