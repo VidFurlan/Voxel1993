@@ -31,7 +31,6 @@ set(SOURCES
     src/window.cpp
     src/player.cpp
     src/renderer.cpp
-    src/wall.cpp
     src/texture_list.cpp
     src/renderer_manager.cpp
     src/chunk.cpp
