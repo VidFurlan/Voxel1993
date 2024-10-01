@@ -1,52 +1,50 @@
 #include "renderer_manager.hpp"
 
-#include <thread>
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
+#include <thread>
 
 #include "chunk.hpp"
 #include "renderer.hpp"
+#include "world.hpp"
 
 RendererManager rendererManager;
 
-RendererManager::RendererManager() {
-    chunksToRender.push(new Chunk(0, 0, 0));
-}
+RendererManager::RendererManager() {}
 
 void RendererManager::render() {
-    Chunk *chunk = chunksToRender.front();
-	while (!chunksToRender.empty()) {
-		Chunk *chunk = chunksToRender.front();
-		chunksToRender.pop();
+	for (int i = 0; i < World::LOADED_WORLD_SIZE; i++) {
+		for (int j = 0; j < World::LOADED_WORLD_SIZE; j++) {
+			for (int k = 0; k < World::LOADED_WORLD_SIZE; k++) {
+				Chunk *chunk = world.getChunk(i, j, k);
+                
+                if (chunk == nullptr) {
+                    continue;
+                }
 
-        Renderer *renderer;
-        if (freeRenderers.empty()) {
-            renderer = new Renderer();
-        }
-        else {
-            renderer = *freeRenderers.begin();
-        }
+				Renderer *renderer;
+				if (freeRenderers.empty()) {
+				 	renderer = new Renderer();
+				} else {
+                    renderer = freeRenderers.top();
+                    freeRenderers.pop();
+				}
+                activeRenderers++;
 
-        busyRenderers.insert(renderer);
-        freeRenderers.erase(renderer);
+				std::thread renderThread(&Chunk::render, chunk, renderer);
+				renderThread.detach();
+			}
+		}
+	}
 
-		std::thread renderThread(&Chunk::render, chunk, renderer);
-        renderThread.detach();
-    }
-
-    std::unique_lock<std::mutex> lock(mtx);
-    cv.wait(lock, [this] { return busyRenderers.empty(); });
-
-    chunksToRender.push(chunk);
+	std::unique_lock<std::mutex> lock(mtx);
+	cv.wait(lock, [this] { return activeRenderers == 0; });
 }
 
 void RendererManager::freeRenderer(Renderer *renderer) {
-    std::lock_guard<std::mutex> lock(mtx);
-    freeRenderers.insert(renderer);
-    busyRenderers.erase(renderer);
-    if (busyRenderers.empty()) {
-        cv.notify_all();
-    }
+    freeRenderers.push(renderer);
+    activeRenderers--;
+	if (activeRenderers == 0) {
+		cv.notify_all();
+	}
 }
-
-void RendererManager::addChunk(Chunk *chunk) { chunksToRender.push(chunk); }

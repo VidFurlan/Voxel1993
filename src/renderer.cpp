@@ -13,6 +13,7 @@
 #include "3D_ENGINE/window.hpp"
 #include "3D_ENGINE/window_defines.hpp"
 #include "block.hpp"
+#include "chunk.hpp"
 
 /**
  * @brief Clip wall edges to the edge of the screen if they are behind the player
@@ -224,6 +225,20 @@ void Renderer::renderBlockSurfaces(Block *block, int xPos1, int xPos2, int botto
     }
 }
 
+void Renderer::renderChunk(Chunk *chunk) {
+    chunkX = chunk->x;
+    chunkY = chunk->y;
+    chunkZ = chunk->z;
+
+    for (int x = 0; x < Chunk::CHUNK_SIZE; x++) {
+        for (int y = 0; y < Chunk::CHUNK_SIZE; y++) {
+            for (int z = 0; z < Chunk::CHUNK_SIZE; z++) {
+                renderBlock(chunk->getBlock(x, y, z), x, y, z);
+            }
+        }
+    }
+}
+
 /**
  * @brief Render the block
  */
@@ -233,9 +248,9 @@ void Renderer::renderBlock(Block *block, int x, int y, int z) {
 
 	distanceToPlayer = 0;
 
-	blockX = globalX + x * Block::BLOCK_SIZE;
-	blockY = globalY + y * Block::BLOCK_SIZE;
-	blockZBottom = globalZ + z * Block::BLOCK_SIZE;
+	blockX = chunkX + x * Block::BLOCK_SIZE;
+	blockY = chunkY + y * Block::BLOCK_SIZE;
+	blockZBottom = chunkZ + z * Block::BLOCK_SIZE;
 	blockZTop = blockZBottom + Block::BLOCK_SIZE;
 
 	int cycles = 2;

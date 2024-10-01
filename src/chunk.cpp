@@ -1,10 +1,8 @@
 #include "chunk.hpp"
 
-#include <array>
-#include <iostream>
-
 #include "block.hpp"
 #include "renderer_manager.hpp"
+#include <iostream>
 
 Chunk::Chunk(int x, int y, int z) : x(x * CHUNK_SIZE), y(y * CHUNK_SIZE), z(z * CHUNK_SIZE) {
 	blocks = new Block **[CHUNK_SIZE];
@@ -31,14 +29,9 @@ Chunk::~Chunk() {
 }
 
 void Chunk::render(Renderer *renderer) {
-	for (int x = 0; x < CHUNK_SIZE; x++) {
-		for (int y = 0; y < CHUNK_SIZE; y++) {
-			for (int z = 0; z < CHUNK_SIZE; z++) {
-				updateVisibleFaces(x, y, z);
-				renderer->renderBlock(&blocks[x][y][z], this->x + x, this->y + y, this->z + z);
-			}
-		}
-	}
+    update();
+
+    renderer->renderChunk(this);
 
 	rendererManager.freeRenderer(renderer);
 }

@@ -1,10 +1,9 @@
 #pragma once
 
+#include <atomic>
 #include <condition_variable>
-#include <queue>
-#include <unordered_set>
+#include <stack>
 
-#include "chunk.hpp"
 #include "renderer.hpp"
 
 class RendererManager {
@@ -12,16 +11,15 @@ class RendererManager {
 	RendererManager();
 
 	void render();
-	void addChunk(Chunk *chunk);
 	void freeRenderer(Renderer *renderer);
 
    private:
-	std::queue<Chunk *> chunksToRender;
-	std::unordered_set<Renderer *> freeRenderers;
-	std::unordered_set<Renderer *> busyRenderers;
+    std::stack<Renderer *> freeRenderers;
 
     std::condition_variable cv;
     std::mutex mtx;
+
+    std::atomic<int> activeRenderers = 0;
 };
 
 extern RendererManager rendererManager;
