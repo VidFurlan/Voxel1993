@@ -6,6 +6,7 @@
 #include <climits>
 #include <cmath>
 #include <functional>
+#include <iostream>
 
 #include "3D_ENGINE/player.hpp"
 #include "3D_ENGINE/renderer.hpp"
@@ -94,7 +95,8 @@ void Renderer::testFloor() {
  * @brief Draw a wall on the screen given its coordinates after calculating the perspective
  */
 void Renderer::renderBlockSurfaces(Block *block, int xPos1, int xPos2, int bottomPos1,
-								   int bottomPos2, int topPos1, int topPos2, int orientation, int w) {
+								   int bottomPos2, int topPos1, int topPos2, int orientation,
+								   int w) {
 	int wallTexture = 0;
 	float horizontalStart = 0,
 		  horizontalStep = static_cast<float>(textures[wallTexture].width * uvU) /
@@ -114,20 +116,19 @@ void Renderer::renderBlockSurfaces(Block *block, int xPos1, int xPos2, int botto
 	if (xPos2 < 0) xPos2 = 0;
 	if (xPos2 > SCR_WIDTH) xPos2 = SCR_WIDTH;
 
-    int y1;
-    int y2;
-    float verticalStart;
-    float verticalStep;
+	int y1;
+	int y2;
+	float verticalStart;
+	float verticalStep;
 
-    // Lambda used to not repeat code
-    // Not using a function since many parameters would need to be passed
-    std::function<void(int)> calculatePixelY = [&](int x) {
+	// Lambda used to not repeat code
+	// Not using a function since many parameters would need to be passed
+	std::function<void(int)> calculatePixelY = [&](int x) {
 		y1 = bottomPos1 + distBottom * (x - originalX1 + 0.5) / distX;
 		y2 = topPos1 + distTop * (x - originalX1 + 0.5) / distX;
 
 		verticalStart = 0;
-		verticalStep = static_cast<float>(textures[wallTexture].height * uvV) /
-							 static_cast<float>(y2 - y1);
+		verticalStep = (textures[wallTexture].height * uvV) / (float)(y2 - y1);
 
 		// Y clipping
 		if (y1 < 0) {
@@ -137,106 +138,107 @@ void Renderer::renderBlockSurfaces(Block *block, int xPos1, int xPos2, int botto
 		if (y1 > SCR_HEIGHT) y1 = SCR_HEIGHT;
 		if (y2 < 0) y2 = 0;
 		if (y2 > SCR_HEIGHT) y2 = SCR_HEIGHT;
-    };
+	};
 
-    if (orientation == 0) {
-        for (int x = xPos1; x < xPos2; x++) {
-            calculatePixelY(x);
+	if (orientation == 0) {
+		for (int x = xPos1; x < xPos2; x++) {
+			calculatePixelY(x);
 
-            if (surfaceOrientation == 1) surfacePoints[x] = y1;
-            if (surfaceOrientation == 2) surfacePoints[x] = y2;
+			if (surfaceOrientation == 1) surfacePoints[x] = y1;
+			if (surfaceOrientation == 2) surfacePoints[x] = y2;
 
-            // Prevent rendering of invisible faces
-            if (w == 0 && !block->visibleFaces[BlockFace::YNeg]) continue;
-            if (w == 1 && !block->visibleFaces[BlockFace::XPos]) continue;
-            if (w == 2 && !block->visibleFaces[BlockFace::YPos]) continue;
-            if (w == 3 && !block->visibleFaces[BlockFace::XNeg]) continue;
-            for (int y = y1; y < y2; y++) {
-                int p = ((textures[wallTexture].height -
-                            (static_cast<int>(verticalStart) % textures[wallTexture].height) - 1) *
-                        3 * textures[wallTexture].width +
-                        (static_cast<int>(horizontalStart) % textures[wallTexture].width) * 3);
-                int r = std::max(textures[wallTexture].textureMap[p + 0] - shade / 2, 0);
-                int g = std::max(textures[wallTexture].textureMap[p + 1] - shade / 2, 0);
-                int b = std::max(textures[wallTexture].textureMap[p + 2] - shade / 2, 0);
+			// Prevent rendering of invisible faces
+			if (w == 0 && !block->visibleFaces[BlockFace::YNeg]) continue;
+			if (w == 1 && !block->visibleFaces[BlockFace::XPos]) continue;
+			if (w == 2 && !block->visibleFaces[BlockFace::YPos]) continue;
+			if (w == 3 && !block->visibleFaces[BlockFace::XNeg]) continue;
 
-                mainWindow.drawPixel(x, y, RgbColor{r, g, b}, distanceToPlayer);
+			for (int y = y1; y < y2; y++) {
+				int p = ((textures[wallTexture].height -
+						  (static_cast<int>(verticalStart) % textures[wallTexture].height) - 1) *
+							 3 * textures[wallTexture].width +
+						 (static_cast<int>(horizontalStart) % textures[wallTexture].width) * 3);
+				int r = std::max(textures[wallTexture].textureMap[p + 0] - shade / 2, 0);
+				int g = std::max(textures[wallTexture].textureMap[p + 1] - shade / 2, 0);
+				int b = std::max(textures[wallTexture].textureMap[p + 2] - shade / 2, 0);
 
-                verticalStart += verticalStep;
-            }
-            horizontalStart += horizontalStep;
-        }
-    } else {
-        for (int x = xPos1; x < xPos2; x++) {
-            calculatePixelY(x);
+				mainWindow.drawPixel(x, y, RgbColor{r, g, b}, distanceToPlayer);
 
-            int xOffset = SCR_WIDTH_HALF;
-            int yOffset = SCR_HEIGHT_HALF;
-            int xNew = x - xOffset;
-            int wallOffset = 0;
-            float tile = surfaceScale * 120;  // Modify this to change texture scale
+				verticalStart += verticalStep;
+			}
+			horizontalStart += horizontalStep;
+		}
+	} else {
+		for (int x = xPos1; x < xPos2; x++) {
+			calculatePixelY(x);
 
-            if (surfaceOrientation == 1) {
-                if (!block->visibleFaces[BlockFace::ZNeg]) break;
-                y2 = surfacePoints[x];
-                wallOffset = blockZBottom;
-            }
-            if (surfaceOrientation == 2) {
-                if (!block->visibleFaces[BlockFace::ZPos]) break;
-                y1 = surfacePoints[x];
-                wallOffset = blockZTop;
-            }
+			int xOffset = SCR_WIDTH_HALF;
+			int yOffset = SCR_HEIGHT_HALF;
+			int xNew = x - xOffset;
+			int wallOffset = 0;
+			float tile = surfaceScale * 120;  // Modify this to change texture scale
 
-            float lookAngle = -player.lookAngle * 6.2;	// 6.2 just works (obtained by trial)
-            float moveVertical = (player.z - wallOffset) / static_cast<float>(yOffset);
+			if (surfaceOrientation == 1) {
+				if (!block->visibleFaces[BlockFace::ZNeg]) break;
+				y2 = surfacePoints[x];
+				wallOffset = blockZBottom;
+			}
+			if (surfaceOrientation == 2) {
+				if (!block->visibleFaces[BlockFace::ZPos]) break;
+				y1 = surfacePoints[x];
+				wallOffset = blockZTop;
+			}
 
-            if (lookAngle > SCR_HEIGHT) lookAngle = SCR_HEIGHT;
-            if (moveVertical == 0) moveVertical = 0.0001;
+			float lookAngle = -player.lookAngle * 6.2;	// 6.2 works good enoughe
+			float moveVertical = (player.z - wallOffset) / static_cast<float>(yOffset);
 
-            int yStart = y1 - SCR_HEIGHT_HALF, yEnd = y2 - yOffset;
+			if (lookAngle > SCR_HEIGHT) lookAngle = SCR_HEIGHT;
+			if (moveVertical == 0) moveVertical = 0.0001;
 
-            for (int y = yStart; y < yEnd; y++) {
-                float z = y + lookAngle;
-                if (z == 0) z = 0.0001;
+			int yStart = y1 - SCR_HEIGHT_HALF, yEnd = y2 - yOffset;
 
-                float fx = xNew / static_cast<float>(z) * moveVertical * tile;
-                float fy = player.fov / static_cast<float>(z) * moveVertical * tile;
+			for (int y = yStart; y < yEnd; y++) {
+				float z = y + lookAngle;
+				if (z == 0) z = 0.0001;
 
-                float rx = fx * sin(player.angle * M_PI / 180) -
-                    fy * cos(player.angle * M_PI / 180) + (player.y / 75.0 * tile);
-                float ry = fx * cos(player.angle * M_PI / 180) +
-                    fy * sin(player.angle * M_PI / 180) - (player.x / 75.0 * tile);
+				float fx = xNew / static_cast<float>(z) * moveVertical * tile;
+				float fy = player.fov / static_cast<float>(z) * moveVertical * tile;
 
-                if (rx < 0) rx = -rx + 1;
-                if (ry < 0) ry = -ry + 1;
-                int _texture = 1;
-                int p = static_cast<int>(textures[_texture].height -
-                        (static_cast<int>(ry) % textures[_texture].height) - 1) *
-                    3 * textures[_texture].width +
-                    (static_cast<int>(rx) % textures[_texture].width) * 3;
-                int r = textures[_texture].textureMap[p + 0];
-                int g = textures[_texture].textureMap[p + 1];
-                int b = textures[_texture].textureMap[p + 2];
+				float rx = fx * sin(player.angle * M_PI / 180) -
+						   fy * cos(player.angle * M_PI / 180) + (player.y / 75.0 * tile);
+				float ry = fx * cos(player.angle * M_PI / 180) +
+						   fy * sin(player.angle * M_PI / 180) - (player.x / 75.0 * tile);
 
-                mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b},
-                        distanceToPlayer + (surfaceOrientation == 1 ? 0.01 : 0));
-            }
-        }
-    }
+				if (rx < 0) rx = -rx + 1;
+				if (ry < 0) ry = -ry + 1;
+				int _texture = 1;
+				int p = static_cast<int>(textures[_texture].height -
+										 (static_cast<int>(ry) % textures[_texture].height) - 1) *
+							3 * textures[_texture].width +
+						(static_cast<int>(rx) % textures[_texture].width) * 3;
+				int r = textures[_texture].textureMap[p + 0];
+				int g = textures[_texture].textureMap[p + 1];
+				int b = textures[_texture].textureMap[p + 2];
+
+				mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b},
+									 distanceToPlayer + (surfaceOrientation == 1 ? 0.01 : 0));
+			}
+		}
+	}
 }
 
 void Renderer::renderChunk(Chunk *chunk) {
-    chunkX = chunk->x;
-    chunkY = chunk->y;
-    chunkZ = chunk->z;
+	chunkX = chunk->x;
+	chunkY = chunk->y;
+	chunkZ = chunk->z;
 
-    for (int x = 0; x < Chunk::CHUNK_SIZE; x++) {
-        for (int y = 0; y < Chunk::CHUNK_SIZE; y++) {
-            for (int z = 0; z < Chunk::CHUNK_SIZE; z++) {
-                renderBlock(chunk->getBlock(x, y, z), x, y, z);
-            }
-        }
-    }
+	for (int x = 0; x < Chunk::CHUNK_SIZE; x++) {
+		for (int y = 0; y < Chunk::CHUNK_SIZE; y++) {
+			for (int z = 0; z < Chunk::CHUNK_SIZE; z++) {
+				renderBlock(chunk->getBlock(x, y, z), x, y, z);
+			}
+		}
+	}
 }
 
 /**
@@ -308,12 +310,6 @@ void Renderer::renderBlock(Block *block, int x, int y, int z) {
 		for (int w = 0; w < 4; w++) {
 			// Check if both bottom points behind player
 			if (wallY[w][0] < 1 && wallY[w][1] < 1) continue;
-
-            // Prevent rendering of invisible faces
-            if (w == 1 && !block->visibleFaces[BlockFace::XPos]) continue;
-            if (w == 2 && !block->visibleFaces[BlockFace::YPos]) continue;
-            if (w == 3 && !block->visibleFaces[BlockFace::XNeg]) continue;
-            if (w == 0 && !block->visibleFaces[BlockFace::YNeg]) continue;
 
 			// Clip wall
 			clipBehindPlayer(wallX[w][0], wallY[w][0], wallZ[w][0], wallX[w][1], wallY[w][1],

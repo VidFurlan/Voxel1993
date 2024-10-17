@@ -23,6 +23,7 @@ void RendererManager::render() {
                 }
 
 				Renderer *renderer;
+                while(activeRenderers > 0);
 				if (freeRenderers.empty()) {
 				 	renderer = new Renderer();
 				} else {

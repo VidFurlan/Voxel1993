@@ -13,7 +13,7 @@ World::World() {
             chunks[i][j] = new Chunk *[LOADED_WORLD_SIZE];
 
             for (int k = 0; k < LOADED_WORLD_SIZE; k++) {
-                chunks[i][j][k] = new Chunk(i, j, k);       
+                chunks[i][j][k] = new Chunk(i, j, k);      
             }
         }
 	}

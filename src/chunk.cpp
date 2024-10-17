@@ -2,9 +2,8 @@
 
 #include "block.hpp"
 #include "renderer_manager.hpp"
-#include <iostream>
 
-Chunk::Chunk(int x, int y, int z) : x(x * CHUNK_SIZE), y(y * CHUNK_SIZE), z(z * CHUNK_SIZE) {
+Chunk::Chunk(int x, int y, int z) : x(x * CHUNK_SIZE * Block::BLOCK_SIZE), y(y * CHUNK_SIZE * Block::BLOCK_SIZE), z(z * CHUNK_SIZE * Block::BLOCK_SIZE) {
 	blocks = new Block **[CHUNK_SIZE];
 
 	for (int i = 0; i < CHUNK_SIZE; i++) {
