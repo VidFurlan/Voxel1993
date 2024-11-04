@@ -1,9 +1,15 @@
 #include "chunk.hpp"
 
+#include <iostream>
+
 #include "block.hpp"
 #include "renderer_manager.hpp"
+#include "world.hpp"
 
-Chunk::Chunk(int x, int y, int z) : x(x * CHUNK_SIZE * Block::BLOCK_SIZE), y(y * CHUNK_SIZE * Block::BLOCK_SIZE), z(z * CHUNK_SIZE * Block::BLOCK_SIZE) {
+Chunk::Chunk(int x, int y, int z)
+	: x(x * CHUNK_SIZE * Block::BLOCK_SIZE),
+	  y(y * CHUNK_SIZE * Block::BLOCK_SIZE),
+	  z(z * CHUNK_SIZE * Block::BLOCK_SIZE) {
 	blocks = new Block **[CHUNK_SIZE];
 
 	for (int i = 0; i < CHUNK_SIZE; i++) {
@@ -28,9 +34,13 @@ Chunk::~Chunk() {
 }
 
 void Chunk::render(Renderer *renderer) {
-    update();
+	if (renderer == nullptr) {
+		std::cout << "\x1b[31m" << "Renderer is null" << std::endl;
+	}
 
-    renderer->renderChunk(this);
+	update();
+
+	renderer->renderChunk(this);
 
 	rendererManager.freeRenderer(renderer);
 }
@@ -60,8 +70,7 @@ void Chunk::updateVisibleFaces(int x, int y, int z) {
 
 bool Chunk::isFaceVisible(int x, int y, int z) {
 	if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_SIZE || z < 0 || z >= CHUNK_SIZE) {
-		return true;
+        return !world.isBlockSolid(x, y, z);
 	}
-
 	return !blocks[x][y][z].isActive();
 }

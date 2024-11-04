@@ -5,7 +5,7 @@
 #include <cmath>
 #include <vector>
 
-#include "3D_ENGINE/window_defines.hpp"
+#include "window_defines.hpp"
 #include "block.hpp"
 #include "texture.hpp"
 
@@ -32,7 +32,7 @@ class Renderer {
 	int uvU = 1, uvV = 1;
 	int shade;
 
-	static void clipBehindPlayer(float &x1, float &y1, float &z1, float &x2, float &y2, float &z2);
+	void clipBehindPlayer(float &x1, float &y1, float &z1, float &x2, float &y2, float &z2);
 	void renderBlockSurfaces(Block *block, int xPos1, int xPos2, int bottomPos1, int bottomPos2,
 							 int topPos1, int topPos2, int orientation, int w);
 

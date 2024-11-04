@@ -2,8 +2,9 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <stack>
 
+#include "chunk.hpp"
+#include "libs/ThreadsafeQueue.hpp"
 #include "renderer.hpp"
 
 class RendererManager {
@@ -13,13 +14,17 @@ class RendererManager {
 	void render();
 	void freeRenderer(Renderer *renderer);
 
+	static const int MAX_RENDERERS = 20;
+
    private:
-    std::stack<Renderer *> freeRenderers;
+	void renderChunk(Chunk *chunk);
 
-    std::condition_variable cv;
-    std::mutex mtx;
+	ThreadsafeQueue<Renderer *> freeRenderers;
 
-    std::atomic<int> activeRenderers = 0;
+	std::condition_variable cv;
+	std::mutex mtx;
+
+	std::atomic<int> activeRenderers = 0;
 };
 
 extern RendererManager rendererManager;

@@ -1,17 +1,22 @@
 #include "3D_ENGINE/window.hpp"
 
+#include <atomic>
 #include <climits>
+#include <iostream>
 
+#include "3D_ENGINE/player.hpp"
+#include "3D_ENGINE/renderer.hpp"
 #include "renderer_manager.hpp"
+#include "window_defines.hpp"
 
 Window mainWindow;
 
-Window::Window() {
-	initGlfwSettings();
+Window::Window() {	
+    initGlfwSettings();
 
-    // Performance testing - disable double buffering
+	// Performance testing - disable double buffering
 	// glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-    
+
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	window = glfwCreateWindow(GLSCR_WIDTH, GLSCR_HEIGHT, "3D Engine", NULL, NULL);
@@ -32,9 +37,8 @@ Window::Window() {
 	glPointSize(pixelScale);
 	glOrtho(0, GLSCR_WIDTH, 0, GLSCR_HEIGHT, -1, 1);
 
-	frameBuffer = std::vector<std::vector<RgbColor>>(
-		SCR_WIDTH, std::vector<RgbColor>(SCR_HEIGHT, backgroundColor));
-	zBuffer = std::vector<std::vector<float>>(SCR_WIDTH, std::vector<float>(SCR_HEIGHT, INT_MAX));
+    frameBuffer = std::vector<std::vector<RgbColor>>(SCR_WIDTH, std::vector<RgbColor>(SCR_HEIGHT, backgroundColor));
+    zBuffer = std::vector<std::vector<float>>(SCR_WIDTH, std::vector<float>(SCR_HEIGHT, INT_MAX));
 }
 
 void Window::initGlfwSettings() {
@@ -53,9 +57,14 @@ void Window::initGlfwSettings() {
  * @param y Position y
  * @param rgbColor Color of the pixel
  */
-void Window::drawPixel(int x, int y, RgbColor rgbColor) { frameBuffer[x][y] = rgbColor; }
+void Window::drawPixel(int x, int y, RgbColor rgbColor) { 
+    std::lock_guard<std::mutex> lock(frameBufferMutex);
+    frameBuffer[x][y] = rgbColor; 
+}
 
 void Window::drawPixel(int x, int y, RgbColor rgbColor, float depth) {
+    std::lock_guard<std::mutex> lock(frameBufferMutex);
+
 	if (depth > zBuffer[x][y]) return;
 
 	frameBuffer[x][y] = rgbColor;
@@ -109,11 +118,12 @@ void Window::movePlayer() {
  * @brief Clear the background of the window using the background color
  */
 void Window::clearBuffer() {
-	for (int y = 0; y < SCR_HEIGHT; y++)
+	for (int y = 0; y < SCR_HEIGHT; y++) {
 		for (int x = 0; x < SCR_WIDTH; x++) {
 			frameBuffer[x][y] = backgroundColor;
 			zBuffer[x][y] = INT_MAX;
 		}
+	}
 }
 
 /**
@@ -123,7 +133,8 @@ void Window::drawBuffer() {
 	glBegin(GL_POINTS);
 	for (int y = 0; y < SCR_HEIGHT; y++) {
 		for (int x = 0; x < SCR_WIDTH; x++) {
-			glColor3ub(frameBuffer[x][y].r, frameBuffer[x][y].g, frameBuffer[x][y].b);
+			RgbColor *color = &frameBuffer[x][y];
+			glColor3ub(color->r, color->g, color->b);
 			glVertex2i(x * pixelScale + 2, y * pixelScale + 2);
 		}
 	}
@@ -133,7 +144,7 @@ void Window::drawBuffer() {
 void Window::fpsCounter() {
 	double currentTime = glfwGetTime();
 	nbFrames++;
-	if (currentTime - lastFpsTime >= 1.0) {  // If last print was more than 1 sec ago
+	if (currentTime - lastFpsTime >= 1.0) {	 // If last print was more than 1 sec ago
 		std::cout << 1000.0 / double(nbFrames) << " ms/frame\n";
 		std::cout << double(nbFrames) << " fps\n";
 
@@ -156,7 +167,7 @@ void Window::updateDisplay() {
 	updateTime();
 	clearBuffer();
 	movePlayer();
-    rendererManager.render();
+	rendererManager.render();
 	drawBuffer();
 	// renderer.drawFloor();
 	// renderer.testTextures();

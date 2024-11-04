@@ -221,7 +221,7 @@ void Renderer::renderBlockSurfaces(Block *block, int xPos1, int xPos2, int botto
 				int b = textures[_texture].textureMap[p + 2];
 
 				mainWindow.drawPixel(xNew + xOffset, y + yOffset, RgbColor{r, g, b},
-									 distanceToPlayer + (surfaceOrientation == 1 ? 0.01 : 0));
+									 distanceToPlayer + 1);
 			}
 		}
 	}

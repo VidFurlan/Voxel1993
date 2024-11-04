@@ -9,8 +9,9 @@ Project is setup to use CMake. To build the project first create a build directo
 mkdir build
 cd build
 cmake ..
-bear -- make # For generating compile_commands.json
+make
 ```
+*For development consider using [compiledb](https://github.com/nickdiego/compiledb).*
 
 ## Project Structure
 - `src/` - Contains all the source code for the project

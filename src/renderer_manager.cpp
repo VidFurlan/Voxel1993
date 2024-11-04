@@ -1,9 +1,10 @@
-#include "renderer_manager.hpp"
-
 #include <condition_variable>
+#include <iostream>
 #include <mutex>
+#include <ratio>
 #include <thread>
 
+#include "renderer_manager.hpp"
 #include "chunk.hpp"
 #include "renderer.hpp"
 #include "world.hpp"
@@ -16,24 +17,7 @@ void RendererManager::render() {
 	for (int i = 0; i < World::LOADED_WORLD_SIZE; i++) {
 		for (int j = 0; j < World::LOADED_WORLD_SIZE; j++) {
 			for (int k = 0; k < World::LOADED_WORLD_SIZE; k++) {
-				Chunk *chunk = world.getChunk(i, j, k);
-                
-                if (chunk == nullptr) {
-                    continue;
-                }
-
-				Renderer *renderer;
-                while(activeRenderers > 0);
-				if (freeRenderers.empty()) {
-				 	renderer = new Renderer();
-				} else {
-                    renderer = freeRenderers.top();
-                    freeRenderers.pop();
-				}
-                activeRenderers++;
-
-				std::thread renderThread(&Chunk::render, chunk, renderer);
-				renderThread.detach();
+				renderChunk(world.getChunk(i, j, k));
 			}
 		}
 	}
@@ -42,9 +26,30 @@ void RendererManager::render() {
 	cv.wait(lock, [this] { return activeRenderers == 0; });
 }
 
+void RendererManager::renderChunk(Chunk *chunk) {
+	if (chunk == nullptr) return;
+
+	while (activeRenderers >= MAX_RENDERERS && freeRenderers.size() <= MAX_RENDERERS) {
+
+	}
+
+	Renderer *renderer;
+
+    auto it = freeRenderers.pop();
+    if (it.has_value()) {
+        renderer = it.value();
+    } else {
+        renderer = new Renderer();
+    }
+	activeRenderers++;
+
+	std::thread renderThread(&Chunk::render, chunk, renderer);
+	renderThread.detach();
+}
+
 void RendererManager::freeRenderer(Renderer *renderer) {
-    freeRenderers.push(renderer);
-    activeRenderers--;
+	freeRenderers.push(renderer);
+	activeRenderers--;
 	if (activeRenderers == 0) {
 		cv.notify_all();
 	}

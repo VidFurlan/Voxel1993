@@ -5,7 +5,7 @@
 
 class Chunk {
    public:
-	static const int CHUNK_SIZE = 3;
+	static const int CHUNK_SIZE = 1;
 	int x, y, z;
 
 	Chunk(int x, int y, int z);

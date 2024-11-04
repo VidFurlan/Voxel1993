@@ -2,13 +2,12 @@
 
 #include <GLFW/glfw3.h>
 
+#include <climits>
 #include <cmath>
-#include <iostream>
+#include <mutex>
 #include <vector>
 
-#include "3D_ENGINE/player.hpp"
-#include "3D_ENGINE/renderer.hpp"
-#include "3D_ENGINE/window_defines.hpp"
+#include <window_defines.hpp>
 
 /**
  * @class Window
@@ -34,8 +33,9 @@ class Window {
 	double lastFpsTime = glfwGetTime();
 	int nbFrames = 0;
 
-	std::vector<std::vector<float>> zBuffer;
+    std::vector<std::vector<float>> zBuffer;
 	std::vector<std::vector<RgbColor>> frameBuffer;
+    std::mutex frameBufferMutex;
 
 	static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 

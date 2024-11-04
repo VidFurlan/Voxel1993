@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 project(3d-engine)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
 find_package(OpenGL REQUIRED)
 
@@ -22,6 +24,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB PROJECT_HEADERS 
     ${CMAKE_SOURCE_DIR}/include/3D_ENGINE/*.h
     ${CMAKE_SOURCE_DIR}/include/3D_ENGINE/*.hpp
+    ${CMAKE_SOURCE_DIR}/include/libs/*.h
+    ${CMAKE_SOURCE_DIR}/include/libs/*.hpp
     ${CMAKE_SOURCE_DIR}/textures/*.h
     ${CMAKE_SOURCE_DIR}/textures/*.hpp
 )

@@ -1,0 +1,187 @@
+[
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/cc",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-MD",
+   "-MT",
+   "CMakeFiles/glad.dir/include/glad/glad.c.o",
+   "-MF",
+   "CMakeFiles/glad.dir/include/glad/glad.c.o.d",
+   "-o",
+   "CMakeFiles/glad.dir/include/glad/glad.c.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/include/glad/glad.c"
+  ],
+  "file": "/home/vid/Dev/personal/3d/include/glad/glad.c"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/main.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/main.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/main.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/main.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/main.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/window.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/window.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/window.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/window.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/window.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/player.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/player.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/player.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/player.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/player.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/renderer.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/renderer.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/renderer.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/renderer.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/renderer.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/texture_list.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/texture_list.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/texture_list.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/texture_list.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/texture_list.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/renderer_manager.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/renderer_manager.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/renderer_manager.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/renderer_manager.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/renderer_manager.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/chunk.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/chunk.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/chunk.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/chunk.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/chunk.cpp"
+ },
+ {
+  "directory": "/home/vid/Dev/personal/3d/build",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/vid/Dev/personal/3d/include",
+   "-I/home/vid/Dev/personal/3d/include/3D_ENGINE",
+   "-I/home/vid/Dev/personal/3d/textures",
+   "-I/home/vid/Dev/personal/3d/build/_deps/glm-src/glm/..",
+   "-std=gnu++20",
+   "-MD",
+   "-MT",
+   "CMakeFiles/3d-engine.dir/src/world.cpp.o",
+   "-MF",
+   "CMakeFiles/3d-engine.dir/src/world.cpp.o.d",
+   "-o",
+   "CMakeFiles/3d-engine.dir/src/world.cpp.o",
+   "-c",
+   "/home/vid/Dev/personal/3d/src/world.cpp"
+  ],
+  "file": "/home/vid/Dev/personal/3d/src/world.cpp"
+ }
+]
