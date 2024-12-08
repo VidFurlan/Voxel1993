@@ -9,15 +9,23 @@
 #include "renderer_manager.hpp"
 #include "window_defines.hpp"
 
+//#define __APPLE__
+
 Window mainWindow;
 
 Window::Window() {	
-    initGlfwSettings();
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	// Performance testing - disable double buffering
 	// glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //uncomment this statement to fix compilation on OS X
+#endif
 
 	window = glfwCreateWindow(GLSCR_WIDTH, GLSCR_HEIGHT, "3D Engine", NULL, NULL);
 	if (window == NULL) {

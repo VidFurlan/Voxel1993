@@ -30,5 +30,5 @@ const RgbColor magenta = {255, 0, 255};
 const RgbColor white = {255, 255, 255};
 const RgbColor black = {0, 0, 0};
 
-const RgbColor backgroundColor = black;
+const RgbColor backgroundColor = cyan;
 const RgbColor debugColor = magenta;
